@@ -1,0 +1,20 @@
+Role:
+1 = Admin
+2 = Member (Anggota/Peserta)
+3 = Committee (Panitia)
+4 = Finance Team (Tim Keuangan)
+
+
+Payment status:
+1 = Berlangsung
+2 = Gagal
+3 = Berhasil
+
+Attendance validity:
+1 = Datang
+2 = Tdk dating
+
+Event status:
+1 = Mendatang
+2 = Berlangsung/dibuka
+3 = Selesai
