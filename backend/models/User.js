@@ -8,17 +8,35 @@ const User = sequelize.define('user', {
         autoIncrement: false,
         allowNull: false,
     },
+    name: {
+        type: DataTypes.STRING(150),
+        allowNull: false,
+    },
     email: {
         type: DataTypes.STRING(100),
         allowNull: false,
     },
     password: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING(100),
         allowNull: false,
+    },
+    phone_number: {
+        type: DataTypes.STRING(15),
+        allowNull: true,
     },
     role: {
         type: DataTypes.STRING(15),
         allowNull: false,
+    },
+    acc_status: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    formatted_id: {
+        type: DataTypes.VIRTUAL,
+        get() {
+            return `UID-${this.id.toString().padStart(3, '0')}`;
+        }
     }
 }, {
     tableName: 'user',

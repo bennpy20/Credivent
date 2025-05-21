@@ -4,6 +4,9 @@ Role:
 3 = Committee (Panitia)
 4 = Finance Team (Tim Keuangan)
 
+Acc status:
+1 = Aktif
+2 = Non-aktif
 
 Payment status:
 1 = Berlangsung

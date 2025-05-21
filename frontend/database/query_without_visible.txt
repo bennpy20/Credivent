@@ -7,64 +7,31 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema credivent
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema credivent
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `credivent` DEFAULT CHARACTER SET utf8 ;
 USE `credivent` ;
 
 -- -----------------------------------------------------
--- Table `credivent`.`user`
+-- Table `user`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`user` ;
+DROP TABLE IF EXISTS `user` ;
 
-CREATE TABLE IF NOT EXISTS `credivent`.`user` (
+CREATE TABLE `user` (
   `id` VARCHAR(15) NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
   `email` VARCHAR(100) NOT NULL,
   `password` VARCHAR(100) NOT NULL,
+  `phone_number` VARCHAR(15),
   `role` INT NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `credivent`.`committee`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`committee` ;
-
-CREATE TABLE IF NOT EXISTS `credivent`.`committee` (
-  `id` VARCHAR(15) NOT NULL,
-  `name` VARCHAR(150) NOT NULL,
-  `user_id` VARCHAR(15) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_committee_user1_idx` (`user_id` ASC),
-  CONSTRAINT `fk_committee_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `credivent`.`user` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+  `acc_status` INT NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `credivent`.`speaker`
+-- Table `event`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`speaker` ;
+DROP TABLE IF EXISTS `event` ;
 
-CREATE TABLE IF NOT EXISTS `credivent`.`speaker` (
-  `id` VARCHAR(15) NOT NULL,
-  `name` VARCHAR(150) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `credivent`.`event`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`event` ;
-
-CREATE TABLE IF NOT EXISTS `credivent`.`event` (
+CREATE TABLE `event` (
   `id` VARCHAR(15) NOT NULL,
   `name` VARCHAR(150) NOT NULL,
   `location` VARCHAR(200) NOT NULL,
@@ -72,151 +39,91 @@ CREATE TABLE IF NOT EXISTS `credivent`.`event` (
   `max_participants` INT NOT NULL,
   `transaction_fee` INT NOT NULL,
   `event_status` INT NOT NULL,
-  `committee_id` VARCHAR(15) NOT NULL,
-  `speaker_id` VARCHAR(15) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_event_committee1_idx` (`committee_id` ASC),
-  INDEX `fk_event_Speaker1_idx` (`speaker_id` ASC),
-  CONSTRAINT `fk_event_committee1`
-    FOREIGN KEY (`committee_id`)
-    REFERENCES `credivent`.`committee` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_event_Speaker1`
-    FOREIGN KEY (`speaker_id`)
-    REFERENCES `credivent`.`speaker` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `credivent`.`finance_team`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`finance_team` ;
-
-CREATE TABLE IF NOT EXISTS `credivent`.`finance_team` (
-  `id` VARCHAR(15) NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
+  `start_date` DATE NOT NULL,
+  `end_date` DATE NOT NULL,
   `user_id` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_finance_team_user_idx` (`user_id` ASC),
-  CONSTRAINT `fk_finance_team_user`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `credivent`.`user` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+  INDEX `idx_event_user_id` (`user_id`),
+  CONSTRAINT `fk_event_user` FOREIGN KEY (`user_id`)
+    REFERENCES `user` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `credivent`.`member`
+-- Table `registration`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`member` ;
+DROP TABLE IF EXISTS `registration` ;
 
-CREATE TABLE IF NOT EXISTS `credivent`.`member` (
+CREATE TABLE `registration` (
   `id` VARCHAR(15) NOT NULL,
-  `name` VARCHAR(150) NOT NULL,
-  `phone_number` VARCHAR(15) NOT NULL,
-  `major` VARCHAR(50) NOT NULL,
-  `user_id` VARCHAR(15) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_member_user1_idx` (`user_id` ASC),
-  CONSTRAINT `fk_member_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `credivent`.`user` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `credivent`.`payment`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`payment` ;
-
-CREATE TABLE IF NOT EXISTS `credivent`.`payment` (
-  `id` VARCHAR(15) NOT NULL,
-  `price` INT NOT NULL,
   `payment_status` INT NOT NULL,
-  `payment_proof` VARCHAR(100) NOT NULL,
-  `finance_team_id` VARCHAR(15) NOT NULL,
-  `member_id` VARCHAR(15) NOT NULL,
+  `payment_proof` VARCHAR(100),
+  `qrcode` VARCHAR(100),
+  `user_id` VARCHAR(15) NOT NULL,
   `event_id` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_payment_finance_team1_idx` (`finance_team_id` ASC),
-  INDEX `fk_payment_member1_idx` (`member_id` ASC),
-  INDEX `fk_payment_event1_idx` (`event_id` ASC),
-  CONSTRAINT `fk_payment_finance_team1`
-    FOREIGN KEY (`finance_team_id`)
-    REFERENCES `credivent`.`finance_team` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_payment_member1`
-    FOREIGN KEY (`member_id`)
-    REFERENCES `credivent`.`member` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_payment_event1`
-    FOREIGN KEY (`event_id`)
-    REFERENCES `credivent`.`event` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+  UNIQUE KEY `unique_user_event` (`user_id`, `event_id`),
+  INDEX `idx_registration_event` (`event_id`),
+  INDEX `idx_registration_user` (`user_id`),
+  CONSTRAINT `fk_registration_event` FOREIGN KEY (`event_id`)
+    REFERENCES `event` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_registration_user` FOREIGN KEY (`user_id`)
+    REFERENCES `user` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `credivent`.`attendance`
+-- Table `attendance`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`attendance` ;
+DROP TABLE IF EXISTS `attendance` ;
 
-CREATE TABLE IF NOT EXISTS `credivent`.`attendance` (
+CREATE TABLE `attendance` (
   `id` VARCHAR(15) NOT NULL,
   `validity` INT NOT NULL,
-  `qrcode` VARCHAR(100) NULL,
-  `certificate_link` VARCHAR(100) NULL,
-  `member_id` VARCHAR(15) NOT NULL,
+  `certificate_link` VARCHAR(100),
+  `registration_id` VARCHAR(15) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_attendance_registration` (`registration_id`),
+  CONSTRAINT `fk_attendance_registration` FOREIGN KEY (`registration_id`)
+    REFERENCES `registration` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `speaker`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `speaker` ;
+
+CREATE TABLE `speaker` (
+  `id` VARCHAR(15) NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
   `event_id` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_attendance_member1_idx` (`member_id` ASC),
-  INDEX `fk_attendance_event1_idx` (`event_id` ASC),
-  CONSTRAINT `fk_attendance_member1`
-    FOREIGN KEY (`member_id`)
-    REFERENCES `credivent`.`member` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_attendance_event1`
-    FOREIGN KEY (`event_id`)
-    REFERENCES `credivent`.`event` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+  INDEX `idx_speaker_event` (`event_id`),
+  CONSTRAINT `fk_speaker_event` FOREIGN KEY (`event_id`)
+    REFERENCES `event` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `credivent`.`event_participant`
+-- Table `event_session`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `credivent`.`event_participant` ;
+DROP TABLE IF EXISTS `event_session` ;
 
-CREATE TABLE IF NOT EXISTS `credivent`.`event_participant` (
+CREATE TABLE `event_session` (
   `id` VARCHAR(15) NOT NULL,
-  `member_id` VARCHAR(15) NOT NULL,
+  `session` INT,
+  `session_start` DATETIME NOT NULL,
+  `session_end` DATETIME NOT NULL,
+  `description` VARCHAR(250),
   `event_id` VARCHAR(15) NOT NULL,
-  PRIMARY KEY (`id`, `member_id`, `event_id`),
-  INDEX `fk_event_participant_member1_idx` (`member_id` ASC),
-  INDEX `fk_event_participant_event1_idx` (`event_id` ASC),
-  CONSTRAINT `fk_event_participant_member1`
-    FOREIGN KEY (`member_id`)
-    REFERENCES `credivent`.`member` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_event_participant_event1`
-    FOREIGN KEY (`event_id`)
-    REFERENCES `credivent`.`event` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+  PRIMARY KEY (`id`),
+  INDEX `idx_session_event` (`event_id`),
+  CONSTRAINT `fk_session_event` FOREIGN KEY (`event_id`)
+    REFERENCES `event` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE = InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

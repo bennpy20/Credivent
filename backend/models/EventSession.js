@@ -1,31 +1,35 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const User = require('./User');
+const Event = require('./Event');
 
-const Member = sequelize.define('member', {
+const EventSession = sequelize.define('event_session', {
     id: {
         type: DataTypes.STRING(15),
         primaryKey: true,
         autoIncrement: false,
         allowNull: false,
     },
-    name: {
-        type: DataTypes.STRING(150),
+    session: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    session_start: {
+        type: DataTypes.DATE,
         allowNull: false,
     },
-    phone_number: {
-        type: DataTypes.STRING(15),
+    session_end: {
+        type: DataTypes.DATE,
         allowNull: false,
     },
-    major: {
-        type: DataTypes.STRING(50),
+    description: {
+        type: DataTypes.STRING(250),
         allowNull: false,
     },
-    user_id: {
+    event_id: {
         type: DataTypes.STRING(15),
         allowNull: false,
         references: {
-            model: 'user',
+            model: 'event',
             key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -34,14 +38,14 @@ const Member = sequelize.define('member', {
     formatted_id: {
         type: DataTypes.VIRTUAL,
         get() {
-            return `M-${this.id.toString().padStart(3, '0')}`;
+            return `SES-${this.id.toString().padStart(3, '0')}`;
         }
     }
 }, {
-    tableName: 'member',
+    tableName: 'speaker',
     timestamps: false,
 });
 
-Member.belongsTo(User, { foreignKey: 'user_id' });
+Speaker.belongsTo(Event, { foreignKey: 'event_id' });
 
-module.exports = Member;
+module.exports = Speaker;

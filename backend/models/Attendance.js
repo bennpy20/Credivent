@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const Member = require('./Member');
-const Event = require('./Event');
+const Registration = require('./Registration');
 
 const Attendance = sequelize.define('attendance', {
     id: {
@@ -14,29 +13,15 @@ const Attendance = sequelize.define('attendance', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    qrcode: {
-        type: DataTypes.STRING(100),
-        allowNull: true,
-    },
     certificate_link: {
         type: DataTypes.STRING(100),
         allowNull: true,
     },
-    member_id: {
+    registration_id: {
         type: DataTypes.STRING(15),
         allowNull: false,
         references: {
-            model: 'member',
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
-    },
-    event_id: {
-        type: DataTypes.STRING(15),
-        allowNull: false,
-        references: {
-            model: 'event',
+            model: 'registration',
             key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -45,7 +30,7 @@ const Attendance = sequelize.define('attendance', {
     formatted_id: {
         type: DataTypes.VIRTUAL,
         get() {
-            return `A-${this.id.toString().padStart(3, '0')}`;
+            return `ATD-${this.id.toString().padStart(3, '0')}`;
         }
     }
 }, {
@@ -53,7 +38,6 @@ const Attendance = sequelize.define('attendance', {
     timestamps: true,
 });
 
-Payment.belongsTo(Member, { foreignKey: 'member_id' });
-Payment.belongsTo(Event, { foreignKey: 'event_id' });
+Attendance.belongsTo(Registration, { foreignKey: 'registration_id' });
 
 module.exports = Attendance;

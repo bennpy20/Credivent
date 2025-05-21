@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const Committee = require('./Committee');
-const Speaker = require('./Speaker');
+const User = require('./User');
 
 const Event = sequelize.define('event', {
     id: {
@@ -34,21 +33,19 @@ const Event = sequelize.define('event', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    committee_id: {
-        type: DataTypes.STRING(15),
+    start_date: {
+        type: DataTypes.DATEONLY,
         allowNull: false,
-        references: {
-            model: 'committee',
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
     },
-    speaker_id: {
+    end_date: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+    },
+    user_id: {
         type: DataTypes.STRING(15),
         allowNull: false,
         references: {
-            model: 'speaker',
+            model: 'user',
             key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -57,7 +54,7 @@ const Event = sequelize.define('event', {
     formatted_id: {
         type: DataTypes.VIRTUAL,
         get() {
-            return `E-${this.id.toString().padStart(3, '0')}`;
+            return `EVN-${this.id.toString().padStart(3, '0')}`;
         }
     }
 }, {
@@ -65,7 +62,6 @@ const Event = sequelize.define('event', {
     timestamps: true,
 });
 
-Event.belongsTo(Committee, { foreignKey: 'committee_id' });
-Event.belongsTo(Speaker, { foreignKey: 'speaker_id' });
+Event.belongsTo(User, { foreignKey: 'user_id' });
 
 module.exports = Event;
