@@ -14,7 +14,7 @@ class LoginController extends Controller
 
     public function submit(Request $request)
     {
-        $response = Http::post('http://localhost:3000/api/login', [
+        $response = Http::post('http://localhost:3000/api/auth/login', [
             'email' => $request->email,
             'password' => $request->password,
         ]);
@@ -30,18 +30,18 @@ class LoginController extends Controller
                 'user' => $data['user'],
             ]);
             
-            // Mapping role ke route name
-            $routes = [
-                1 => 'admin.index',
-                2 => 'member.index',
-                3 => 'committee.index',
-                4 => 'finance_team.index',
-            ];
+            // // Mapping role ke route name
+            // $routes = [
+            //     1 => 'admin.index',
+            //     2 => 'member.index',
+            //     3 => 'committee.index',
+            //     4 => 'finance_team.index',
+            // ];
 
-            $role = $data['user']['role'];
+            // $role = $data['user']['role'];
 
             // Redirect langsung
-            return redirect()->route($routes[$role]);
+            return redirect()->route('member.index');
         } else {
             // dd($response->status(), $response->body());
             return back()->withErrors(['login' => 'Login gagal.'])->withInput();
@@ -59,7 +59,7 @@ class LoginController extends Controller
     {
         $token = session('jwt_token');
 
-        $response = Http::withToken($token)->get('http://localhost:3000/api/profile');
+        $response = Http::withToken($token)->get('http://localhost:3000/api/auth/profile');
 
         if ($response->successful()) {
             return response()->json($response->json());

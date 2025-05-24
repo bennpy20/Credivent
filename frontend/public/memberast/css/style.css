@@ -2534,7 +2534,7 @@ input[type="button"].btn-block {
 }
 
 /* Menghapus hover effect dari dropdown */
-.nav-item.dropdown:hover .dropdown-menu {
+.nav-item.dropdown .dropdown-menu {
     display: none; /* Memastikan dropdown tidak muncul saat hover */
 }
 

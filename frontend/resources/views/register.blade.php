@@ -52,12 +52,6 @@
                                     class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                     placeholder="08XXXXXXXXXX" required />
                             </label>
-                            <label class="block mt-4 text-sm">
-                                <span class="text-gray-700 dark:text-gray-400">Program Studi</span>
-                                <input type="text" name="major"
-                                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                    placeholder="Program Studi" required />
-                            </label>
 
                             <div class="flex mt-6 text-sm">
                                 <label class="flex items-center dark:text-gray-400">
@@ -99,7 +93,7 @@
                             <p class="text-sm font-medium">
                                 Already have an account?
                                 <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                                    href="{{ route('login.form') }}">
+                                    href="{{ route('login') }}">
                                     Login
                                 </a>
                             </p>

@@ -6,34 +6,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Link ke Bootstrap CSS -->
+    <!-- Link ke Bootstrap CSS dari CDN -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Link ke jQuery dan Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- jQuery dan Bootstrap JS dari CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
 
-    <link rel="stylesheet" href="../memberast/css/open-iconic-bootstrap.min.css">
-    <link rel="stylesheet" href="../memberast/css/animate.css">
+    <!-- Asset lokal -->
+    <link rel="stylesheet" href="{{ asset('memberast/css/open-iconic-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('memberast/css/animate.css') }}">
 
-    <link rel="stylesheet" href="../memberast/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="../memberast/css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="../memberast/css/magnific-popup.css">
+    <link rel="stylesheet" href="{{ asset('memberast/css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('memberast/css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('memberast/css/magnific-popup.css') }}">
 
-    <link rel="stylesheet" href="../memberast/css/aos.css">
+    <link rel="stylesheet" href="{{ asset('memberast/css/aos.css') }}">
 
-    <link rel="stylesheet" href="../memberast/css/ionicons.min.css">
+    <link rel="stylesheet" href="{{ asset('memberast/css/ionicons.min.css') }}">
 
-    <link rel="stylesheet" href="../memberast/css/bootstrap-datepicker.css">
-    <link rel="stylesheet" href="../memberast/css/jquery.timepicker.css">
+    <link rel="stylesheet" href="{{ asset('memberast/css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('memberast/css/jquery.timepicker.css') }}">
 
-
-    <link rel="stylesheet" href="../memberast/css/flaticon.css">
-    <link rel="stylesheet" href="../memberast/css/icomoon.css">
-    <link rel="stylesheet" href="../memberast/css/style.css">
+    <link rel="stylesheet" href="{{ asset('memberast/css/flaticon.css') }}">
+    <link rel="stylesheet" href="{{ asset('memberast/css/icomoon.css') }}">
+    <link rel="stylesheet" href="{{ asset('memberast/css/style.css') }}">
 </head>
 
 <body>

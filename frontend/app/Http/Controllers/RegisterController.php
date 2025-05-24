@@ -18,21 +18,20 @@ class RegisterController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:100',
             'password' => 'required|string',
-            'phone_number' => 'required|string',
-            'major' => 'required|string|max:50'
+            'phone_number' => 'required|string|max:15'
         ]);
 
-        $response = Http::post('http://localhost:3000/api/register', [
+        $response = Http::post('http://localhost:3000/api/auth/register', [
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
-            'role' => 2,
             'phone_number' => $request->phone_number,
-            'major' => $request->major
+            'role' => 2,
+            'acc_status' => 1
         ]);
 
         if ($response->successful()) {
-            return redirect()->route('login.form')->with('success', 'Register berhasil! Silakan login.');
+            return redirect()->route('login')->with('success', 'Register berhasil! Silakan login.');
         } else {
             return back()->withErrors(['msg' => 'Register gagal: ' . $response->json('message')]);
         }
