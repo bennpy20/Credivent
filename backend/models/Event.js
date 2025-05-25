@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const User = require('./User');
 
 const Event = sequelize.define('event', {
     id: {
@@ -41,16 +40,6 @@ const Event = sequelize.define('event', {
         type: DataTypes.DATEONLY,
         allowNull: false,
     },
-    user_id: {
-        type: DataTypes.STRING(15),
-        allowNull: false,
-        references: {
-            model: 'user',
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
-    },
     formatted_id: {
         type: DataTypes.VIRTUAL,
         get() {
@@ -61,7 +50,5 @@ const Event = sequelize.define('event', {
     tableName: 'event',
     timestamps: true,
 });
-
-Event.belongsTo(User, { foreignKey: 'user_id' });
 
 module.exports = Event;

@@ -18,16 +18,14 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto align-items-center">
-                <li class="nav-item active"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="speakers.html" class="nav-link">Speakers</a></li>
-                <li class="nav-item"><a href="schedule.html" class="nav-link">Schedule</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-item {{ Route::is('member.index') ? 'active' : '' }}"><a href="{{ route('member.index') }}" class="nav-link">Home</a></li>
+                <li class="nav-item {{ Route::is('member.schedule.index') ? 'active' : '' }}" ><a href="{{ route('member.schedule.index') }}" class="nav-link">Jadwal</a></li>
+                <li class="nav-item"><a href="schedule.html" class="nav-link">Pembicara</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Tentang Kami</a></li>
 
                 @if (session()->has('user') && session('user.role') == 1)
                     <!-- Tampilkan login jika belum login -->
-                    <li class="nav-item cta mr-md-2">
+                    <li class="nav-item cta ml-2 mb-1">
                         <a href="{{ route('admin.index') }}" class="nav-link">
                             Pusat Administrator
                         </a>
@@ -85,7 +83,8 @@
                             <!-- Menu dropdown -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="#">Profil</a></li>
-                                <li><a class="dropdown-item" href="#">Kelola Keuangan</a></li>
+                                <li><a class="dropdown-item" href="{{ route('committee.event.index') }}">Buat event</a></li>
+                                <li><a class="dropdown-item" href="#">Scan kode</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -120,8 +119,7 @@
                             <!-- Menu dropdown -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="#">Profil</a></li>
-                                <li><a class="dropdown-item" href="#">Buat event</a></li>
-                                <li><a class="dropdown-item" href="#">Scan kode</a></li>
+                                <li><a class="dropdown-item" href="#">Kelola Keuangan</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -140,7 +138,7 @@
                     </li>
                 @else
                     <!-- Tampilkan login jika belum login -->
-                    <li class="nav-item cta mr-md-2">
+                    <li class="nav-item cta ml-2 mb-1">
                         <a href="{{ route('login') }}" class="nav-link">Login</a>
                     </li>
                 @endif
