@@ -18,6 +18,7 @@ Attendance validity:
 2 = Tdk dating
 
 Event status:
+0 = Draft (untuk status saat pembuatan event)
 1 = Mendatang
 2 = Berlangsung/dibuka
 3 = Selesai

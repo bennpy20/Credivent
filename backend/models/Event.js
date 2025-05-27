@@ -20,7 +20,7 @@ const Event = sequelize.define('event', {
         type: DataTypes.STRING(100),
         allowNull: false,
     },
-    max_participant: {
+    max_participants: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
@@ -48,7 +48,7 @@ const Event = sequelize.define('event', {
     }
 }, {
     tableName: 'event',
-    timestamps: true,
+    timestamps: false,
 });
 
 module.exports = Event;

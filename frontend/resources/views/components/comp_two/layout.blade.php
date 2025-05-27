@@ -17,6 +17,12 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <!-- Flatpickr CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
+
     <!-- Asset lokal -->
     <link rel="stylesheet" href="{{ asset('memberast/css/open-iconic-bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('memberast/css/animate.css') }}">
@@ -66,11 +72,44 @@
     <script src="../memberast/js/aos.js"></script>
     <script src="../memberast/js/jquery.animateNumber.min.js"></script>
     <script src="../memberast/js/bootstrap-datepicker.js"></script>
-    <script src="../memberast/js/jquery.timepicker.min.js"></script>
+    {{-- <script src="../memberast/js/jquery.timepicker.min.js"></script> --}}
     <script src="../memberast/js/scrollax.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
     <script src="../memberast/js/google-map.js"></script>
     <script src="../memberast/js/main.js"></script>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Date picker: hanya tanggal, tanpa waktu
+            flatpickr("#datePicker", {
+                dateFormat: "Y-m-d",
+                // disable time picking
+                enableTime: false,
+            });
+
+            // Time picker: hanya waktu, tanpa tanggal
+            flatpickr("#timePicker", {
+                noCalendar: true,
+                enableTime: true,
+                dateFormat: "H:i",
+                time_24hr: true,
+            });
+        });
+    </script>
+
+    {{-- <script>
+        $(document).ready(function() {
+            flatpickr("#datetimepicker", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+            });
+        });
+    </script> --}}
+
 
 </body>
 
