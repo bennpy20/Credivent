@@ -23,7 +23,7 @@
     <section class="ftco-section bg-light">
         <div class="container">
             <div class="d-flex justify-content-end mb-4">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalCreateEvent">
                     Tambah Event
                 </button>
 
@@ -43,64 +43,23 @@
                                     <div class="d-flex align-items-center pt-2 mb-4">
                                         <div class="event-date-display">{{ $event['date_display'] }}</div>
                                     </div>
-                                    <h3 class="heading mt-2">{{ $event['name'] }}</h3>
-                                    <p><strong>Lokasi:</strong> {{ $event['location'] }}</p>
-                                    <p><strong>Kapasitas Peserta:</strong>
+                                    <h3 class="heading mt-2"><strong>{{ $event['name'] }}</strong></h3>
+                                    <p>Lokasi: {{ $event['location'] }}</p>
+                                    <p>Kapasitas Peserta:
                                         {{ number_format($event['max_participants'], 0, ',', '.') }}</p>
-                                    <p><strong>Biaya Tiket:</strong> Rp
+                                    <p>Biaya Tiket: Rp
                                         {{ number_format($event['transaction_fee'], 0, ',', '.') }}</p>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#modalUpdateEvent{{ $event['id'] }}">
+                                        Edit Event
+                                    </button>
+
+                                    
                                 </div>
                             </div>
                         </div>
+                        @include('committee.event.edit', ['event' => $event])
                     @endforeach
-                    {{-- <div class="col-md-4 d-flex ftco-animate">
-                    <div class="blog-entry justify-content-end">
-                        <a href="blog-single.html" class="block-20"
-                            style="background-image: url('../memberast/images/image_2.jpg');">
-                        </a>
-                        <div class="text p-4 float-right d-block">
-                            <div class="d-flex align-items-center pt-2 mb-4">
-                                <div class="one">
-                                    <span class="day">07</span>
-                                </div>
-                                <div class="two">
-                                    <span class="yr">2019</span>
-                                    <span class="mos">January</span>
-                                </div>
-                            </div>
-                            <h3 class="heading mt-2"><a href="#">Why Lead Generation is Key for Business
-                                    Growth</a>
-                            </h3>
-                            <p>A small river named Duden flows by their place and supplies it with the necessary
-                                regelialia.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 d-flex ftco-animate">
-                    <div class="blog-entry">
-                        <a href="blog-single.html" class="block-20"
-                            style="background-image: url('../memberast/images/image_3.jpg');">
-                        </a>
-                        <div class="text p-4 float-right d-block">
-                            <div class="d-flex align-items-center pt-2 mb-4">
-                                <div class="one">
-                                    <span class="day">06</span>
-                                </div>
-                                <div class="two">
-                                    <span class="yr">2019</span>
-                                    <span class="mos">January</span>
-                                </div>
-                            </div>
-                            <h3 class="heading mt-2"><a href="#">Why Lead Generation is Key for Business
-                                    Growth</a>
-                            </h3>
-                            <p>A small river named Duden flows by their place and supplies it with the necessary
-                                regelialia.
-                            </p>
-                        </div>
-                    </div>
-                </div> --}}
                 </div>
             @else
                 <!-- KALO KOSONG -->

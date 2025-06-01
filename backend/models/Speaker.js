@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const Event = require('./Event');
+const EventSession = require('./EventSession');
 
 const Speaker = sequelize.define('speaker', {
     id: {
@@ -13,11 +13,15 @@ const Speaker = sequelize.define('speaker', {
         type: DataTypes.STRING(150),
         allowNull: false,
     },
-    event_id: {
+    speaker_image: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+    },
+    event_session_id: {
         type: DataTypes.STRING(15),
         allowNull: false,
         references: {
-            model: 'event',
+            model: 'event_session',
             key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -34,6 +38,6 @@ const Speaker = sequelize.define('speaker', {
     timestamps: false,
 });
 
-Speaker.belongsTo(Event, { foreignKey: 'event_id' });
+Speaker.belongsTo(EventSession, { foreignKey: 'event_session_id' });
 
 module.exports = Speaker;

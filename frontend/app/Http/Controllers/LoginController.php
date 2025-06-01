@@ -19,8 +19,6 @@ class LoginController extends Controller
             'password' => $request->password,
         ]);
 
-        // dd($response);
-
         if ($response->successful()) {
             $data = $response->json();
 
@@ -29,16 +27,6 @@ class LoginController extends Controller
                 'jwt_token' => $data['token'],
                 'user' => $data['user'],
             ]);
-            
-            // // Mapping role ke route name
-            // $routes = [
-            //     1 => 'admin.index',
-            //     2 => 'member.index',
-            //     3 => 'committee.index',
-            //     4 => 'finance_team.index',
-            // ];
-
-            // $role = $data['user']['role'];
 
             // Redirect langsung
             return redirect()->route('member.index');

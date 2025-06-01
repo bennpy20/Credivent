@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 const User = require('./User');
-const Event = require('./Event');
+const EventSession = require('./EventSession');
 
 const Registration = sequelize.define('registration', {
     id: {
@@ -40,22 +40,22 @@ const Registration = sequelize.define('registration', {
     timestamps: false,
     indexes: [{
         unique: true,
-        fields: ['user_id', 'event_id']
+        fields: ['user_id', 'event_session_id']
     }]
 });
 
 Registration.belongsTo(User, { foreignKey: 'user_id' });
-Registration.belongsTo(Event, { foreignKey: 'event_id' });
+Registration.belongsTo(EventSession, { foreignKey: 'event_session_id' });
 
-User.belongsToMany(Event, {
+User.belongsToMany(EventSession, {
     through: Registration,
     foreignKey: 'user_id',
-    otherKey: 'event_id',
+    otherKey: 'event_session_id',
 });
 
 Event.belongsToMany(User, {
     through: Registration,
-    foreignKey: 'event_id',
+    foreignKey: 'event_session_id',
     otherKey: 'user_id',
 });
 

@@ -4,7 +4,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const Event = require('../models/Event');
+const EventSession = require('../models/EventSession');
+const Speaker = require('../models/Speaker');
 const generateEventId = require('../utils/generateEventId');
+const generateEventSessionId = require('../utils/generateEventSessionId');
+const generateSpeakerId = require('../utils/generateSpeakerId');
 
 //// Route untuk Panitia (Committee) kelola event
 router.get('/committee-event-index', async (req, res) => {
@@ -21,16 +25,14 @@ router.post('/committee-event-store', async (req, res) => {
         transaction_fee,
         event_status,
         start_date,
-        end_date
+        end_date,
+        user_id,
+        event_sessions = []
     } = req.body;
 
-    try {
-        // Cek apakah nama event sudah ada (opsional)
-        const existingEvent = await Event.findOne({ where: { name } });
-        if (existingEvent) {
-            return res.status(400).json({ status: 'fail', message: 'Nama event sudah terdaftar' });
-        }
+    const t = await Event.sequelize.transaction();
 
+    try {
         // Buat ID event baru (jika kamu punya custom ID)
         const newEventId = await generateEventId();
 
@@ -44,8 +46,37 @@ router.post('/committee-event-store', async (req, res) => {
             transaction_fee,
             event_status,
             start_date,
-            end_date
-        });
+            end_date,
+            user_id
+        }, { transaction: t });
+
+        // Simpan setiap sesi dan speaker
+        for (let i = 0; i < event_sessions.length; i++) {
+            const session = event_sessions[i];
+
+            const newEventSessionId = await generateEventSessionId();
+
+            const newSession = await EventSession.create({
+                id: newEventSessionId,
+                event_id: newEvent.id,
+                session: i + 1,  // simpan urutan sesi ke kolom 'session'
+                title: session.title,
+                session_start: session.session_start,
+                session_end: session.session_end,
+                description: session.description
+            }, { transaction: t });
+
+            const newSpeakerId = await generateSpeakerId();
+
+            await Speaker.create({
+                id: newSpeakerId,
+                event_session_id: newSession.id,
+                name: session.name,
+                speaker_image: session.speaker_image || null
+            }, { transaction: t });
+        }
+
+        await t.commit();
 
         res.json({
             status: 'success',

@@ -13,6 +13,10 @@ const EventSession = sequelize.define('event_session', {
         type: DataTypes.INTEGER,
         allowNull: true,
     },
+    title: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+    },
     session_start: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -38,14 +42,14 @@ const EventSession = sequelize.define('event_session', {
     formatted_id: {
         type: DataTypes.VIRTUAL,
         get() {
-            return `SES-${this.id.toString().padStart(3, '0')}`;
+            return `ESE-${this.id.toString().padStart(3, '0')}`;
         }
     }
 }, {
-    tableName: 'speaker',
+    tableName: 'event_session',
     timestamps: false,
 });
 
-Speaker.belongsTo(Event, { foreignKey: 'event_id' });
+EventSession.belongsTo(Event, { foreignKey: 'event_id' });
 
-module.exports = Speaker;
+module.exports = EventSession;

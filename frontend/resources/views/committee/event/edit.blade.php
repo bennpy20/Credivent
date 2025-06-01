@@ -1,38 +1,40 @@
 <!-- Modal -->
-<div class="modal fade" id="modalCreateEvent" tabindex="-1" role="dialog" aria-labelledby="modalCreateEventTitle"
-    aria-hidden="true">
+<div class="modal fade" id="modalUpdateEvent{{ $event['id'] }}" tabindex="-1" role="dialog"
+    aria-labelledby="modalUpdateEventTitle{{ $event['id'] }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalCreateEventTitle">Tambah event</h5>
+                <h5 class="modal-title" id="modalUpdateEventTitle">Update event</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="{{ route('committee.event.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('committee.event.store', $event['id']) }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Nama Event</label>
-                        <input type="text" class="form-control" name="name" placeholder="Masukkan nama event">
+                        <input type="text" class="form-control" name="name" value="{{ $event['name'] }}">
                     </div>
                     <div class="form-group">
                         <label>Lokasi</label>
-                        <input type="text" class="form-control" name="location" placeholder="Masukkan lokasi event">
+                        <input type="text" class="form-control" name="location" value="{{ $event['location'] }}">
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Kapasitas Peserta</label>
                                 <input type="number" class="form-control" name="max_participants"
-                                    placeholder="Masukkan kapasitas">
+                                    value="{{ $event['max_participants'] }}">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Harga Tiket</label>
                                 <input type="number" class="form-control" name="transaction_fee"
-                                    placeholder="Masukkan harga">
+                                    value="{{ $event['transaction_fee'] }}">
                             </div>
                         </div>
                     </div>
@@ -41,14 +43,14 @@
                             <div class="form-group">
                                 <label for="datePicker">Tanggal Mulai</label>
                                 <input type="text" name="start_date" id="datePicker" class="form-control"
-                                    placeholder="YYYY-MM-DD" />
+                                    value="{{ $event['start_date'] }}" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="datePicker">Tanggal Selesai</label>
                                 <input type="text" name="end_date" id="datePicker" class="form-control"
-                                    placeholder="YYYY-MM-DD" />
+                                    value="{{ $event['end_date'] }}" />
                             </div>
                         </div>
                     </div>
@@ -58,7 +60,7 @@
                         <input type="text" class="form-control time-picker" placeholder="HH:mm" />
                     </div> --}}
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label for="inputGroupFile01">Foto Poster</label>
                         <div class="input-group mb-3 form">
                             <div class="custom-file">
@@ -69,7 +71,7 @@
                                 </label>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     {{-- <div class="form-group">
                         <label>Jumlah sesi</label>
                         <input type="number" class="form-control" name="session" placeholder="Masukkan jumlah sesi">
@@ -78,10 +80,8 @@
                     <!-- Tambah di bawah input jumlah sesi -->
                     <div class="form-group">
                         <label>Sesi Event</label>
-                        <div id="session-container">
-                            <!-- Sesi-sesi akan ditambahkan di sini -->
-                        </div>
-                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addSession()">Tambah
+                        <div id="edit-session-container"></div>
+                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addSessionEdit()">Tambah
                             Sesi</button>
                     </div>
                 </div>
@@ -109,15 +109,15 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Waktu Mulai</label>
-                    <input type="text" name="sessions[__INDEX__][session_start]" id="timePicker"
-                        class="form-control" placeholder="HH:MM" required>
+                    <input type="text" name="sessions[__INDEX__][session_start]" id="timePicker" class="form-control"
+                        placeholder="HH:MM" required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Waktu Selesai</label>
-                    <input type="text" name="sessions[__INDEX__][session_end]" id="timePicker"
-                        class="form-control" placeholder="HH:MM" required>
+                    <input type="text" name="sessions[__INDEX__][session_end]" id="timePicker" class="form-control"
+                        placeholder="HH:MM" required>
                 </div>
             </div>
         </div>
@@ -151,45 +151,42 @@
 </script>
 
 <script>
-    let sessionIndex = 0;
+    let sessionIndexEdit = 0;
 
-    function addSession() {
+    function openEditModal(eventData) {
+        const container = document.getElementById('edit-session-container');
+        container.innerHTML = '';
+        sessionIndexEdit = 0;
+
+        eventData.event_sessions.forEach((session, i) => {
+            const html = document.getElementById('session-template').innerHTML
+                .replace(/__INDEX__/g, sessionIndexEdit)
+                .replace('value=""', `value="${session.title}"`);
+
+            container.insertAdjacentHTML('beforeend', html);
+            container.querySelectorAll('.session-number')[i].innerText = i + 1;
+
+            // Manual set value
+            const block = container.querySelectorAll('.session-block')[i];
+            block.querySelector(`[name="sessions[${i}][title]"]`).value = session.title;
+            block.querySelector(`[name="sessions[${i}][session_start]"]`).value = session.session_start;
+            block.querySelector(`[name="sessions[${i}][session_end]"]`).value = session.session_end;
+            block.querySelector(`[name="sessions[${i}][description]"]`).value = session.description;
+            block.querySelector(`[name="sessions[${i}][name]"]`).value = session.name;
+
+            sessionIndexEdit++;
+        });
+
+        $('#modalEditEvent').modal('show');
+    }
+
+    function addSessionEdit() {
         const template = document.getElementById('session-template').innerHTML;
-        const html = template.replace(/__INDEX__/g, sessionIndex);
-        // Menyisipkan sesi baru ke dalam container
-        const sessionContainer = document.getElementById('session-container');
-        sessionContainer.insertAdjacentHTML('beforeend', html);
-
-        // Mengupdate nomor sesi di dalam elemen <p>
-        const sessionNumber = sessionContainer.querySelectorAll('.session-block')[sessionIndex];
-        sessionNumber.querySelector('.session-number').innerText = sessionIndex + 1;
-
-        // Inisialisasi ulang timepicker
-        flatpickr("#timePicker", {
-            noCalendar: true,
-            enableTime: true,
-            dateFormat: "H:i",
-            time_24hr: true,
-        });
-        // Inisialisasi ulang utk file input
-        document.querySelector('.custom-file-input').addEventListener('change', function(e) {
-            var fileName = e.target.files[0] ? e.target.files[0].name : "Choose file";
-            var label = e.target.nextElementSibling;
-            label.innerText = fileName;
-        });
-        sessionIndex++;
+        const html = template.replace(/__INDEX__/g, sessionIndexEdit);
+        const container = document.getElementById('edit-session-container');
+        container.insertAdjacentHTML('beforeend', html);
+        const sessionNumber = container.querySelectorAll('.session-block')[sessionIndexEdit];
+        sessionNumber.querySelector('.session-number').innerText = sessionIndexEdit + 1;
+        sessionIndexEdit++;
     }
-
-    function removeSession(button) {
-        const sessionCard = button.closest('.session-block');
-        sessionCard.remove();
-    }
-
-    // Update label file name on file change
-    document.addEventListener('change', function(e) {
-        if (e.target && e.target.classList.contains('custom-file-input')) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : "Pilih file (.jpg atau .png)";
-            e.target.nextElementSibling.innerText = fileName;
-        }
-    });
 </script>

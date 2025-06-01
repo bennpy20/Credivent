@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CommitteeEventController extends Controller
 {
@@ -64,10 +65,19 @@ class CommitteeEventController extends Controller
             'name' => 'required|string|max:150',
             'location' => 'required|string|max:200',
             'poster_link' => 'required|image|mimes:jpg,png|max:2048',
-            'max_participants' => 'required|integer',
-            'transaction_fee' => 'required|integer',
+            'max_participants' => 'required|numeric',
+            'transaction_fee' => 'required|numeric',
             'start_date' => 'required|date',
-            'end_date' => 'required|date'
+            'end_date' => 'required|date',
+            // Validasi session
+            'sessions' => 'required|array|min:1',
+            // Validasi setiap field dalam sessions
+            'sessions.*.title' => 'required|string|max:150',
+            'sessions.*.session_start' => 'required|date_format:H:i',
+            'sessions.*.session_end' => 'required|date_format:H:i|after:sessions.*.session_start',
+            'sessions.*.description' => 'nullable|string|max:500',
+            'sessions.*.name' => 'required|string|max:100',
+            'sessions.*.speaker_image' => 'nullable|image|mimes:jpg,png|max:2048',
         ]);
 
         // Simpan file poster
@@ -75,25 +85,57 @@ class CommitteeEventController extends Controller
 
         if ($request->hasFile('poster_link')) {
             $posterFile = $request->file('poster_link');
-
             // Ambil nama event dari request
             $eventName = $request->input('name');
-
             // Bersihkan nama event agar aman untuk nama file
             $safeEventName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $eventName);
-
             // Ambil ekstensi file
             $extension = $posterFile->getClientOriginalExtension();
-
             // Buat nama file final
             $posterFilename = 'event_' . $safeEventName . '.' . $extension;
-
             // Pindahkan file ke folder public/posters
             $posterFile->move(public_path('posters'), $posterFilename);
-
             // Simpan path relatif (untuk frontend / API)
             $posterPath = url('posters/' . $posterFilename); // full URL, cocok untuk API
         }
+
+        // Siapkan array sessions
+        $sessionsInput = $request->input('sessions', []);
+        $eventSessions = [];
+
+        foreach ($sessionsInput as $index => $session) {
+            $sessionData = [
+                'title' => $session['title'],
+                'session_start' => $session['session_start'],
+                'session_end' => $session['session_end'],
+                'description' => $session['description'],
+                'name' => $session['name'],
+                'speaker_image' => null // akan diisi di bawah jika file tersedia
+            ];
+
+            // Proses foto pembicara jika ada
+            if ($request->hasFile("sessions.$index.speaker_image")) {
+                $speakerFile = $request->file("sessions.$index.speaker_image");
+                // Bersihkan nama event agar aman untuk nama file
+                $safeSpeakerName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $eventName);
+                // Ambil ekstensi file
+                $speakerExtension = $speakerFile->getClientOriginalExtension();
+                // Buat nama file final
+                $speakerFilename = 'speaker_' . $index . '_' . $safeSpeakerName . '.' . $speakerExtension;
+                // Pindahkan file ke folder public/posters
+                $speakerFile->move(public_path('speakers'), $speakerFilename);
+                // Simpan path relatif (untuk frontend / API)
+                $sessionData['speaker_image'] = url('speakers/' . $speakerFilename); // full URL, cocok untuk API
+            }
+
+            $eventSessions[] = $sessionData;
+        }
+
+        // Kirim ke backend Node.js
+        $user = session('user'); // Ambil data user dari session
+        $user_id = $user['id'];
+
+        // $eventSessions = $request->input('sessions');
 
         $response = Http::post('http://localhost:3000/api/committee/committee-event-store', [
             'name' => $request->name,
@@ -101,15 +143,17 @@ class CommitteeEventController extends Controller
             'poster_link' => $posterPath, // dikirim sebagai URL/path
             'max_participants' => $request->max_participants,
             'transaction_fee' => $request->transaction_fee,
-            'event_status' => 0,
+            'event_status' => 1,
             'start_date' => $request->start_date,
-            'end_date' => $request->end_date
+            'end_date' => $request->end_date,
+            'user_id' => $user_id,
+            // 'session' => $request->session,
+            'event_sessions' => $eventSessions
         ]);
 
         if ($response->successful()) {
             return redirect()->route('committee.event.index')->with('success', 'Event berhasil dibuat');
         } else {
-            dd($response->body());
             return back()->withErrors(['error' => 'Gagal menambahkan user'])->withInput();
         }
     }
@@ -127,7 +171,7 @@ class CommitteeEventController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('committee.event.edit');
     }
 
     /**
