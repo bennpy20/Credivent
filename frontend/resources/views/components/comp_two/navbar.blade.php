@@ -39,7 +39,7 @@
                                 aria-expanded="false"
                                 style="width: 40px; height: 40px; padding: 0; border-radius: 50%; overflow: hidden;">
                                 <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
-                                    <img src="{{ Auth::user()->profile_picture ?? 'account-icon-default.jpg' }}"
+                                    <img src="{{ Auth::user()->profile_picture ?? asset('account-icon-default.jpg') }}"
                                         alt="Profile"
                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 </div>
@@ -48,7 +48,7 @@
                             <!-- Menu dropdown -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="#">Profil</a></li>
-                                <li><a class="dropdown-item" href="#">Event Terdaftar</a></li>
+                                <li><a class="dropdown-item" href="{{ route('member.registration.index') }}">Event Terdaftar</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -74,7 +74,7 @@
                                 aria-expanded="false"
                                 style="width: 40px; height: 40px; padding: 0; border-radius: 50%; overflow: hidden;">
                                 <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
-                                    <img src="{{ Auth::user()->profile_picture ?? '../account-icon-default.jpg' }}"
+                                    <img src="{{ Auth::user()->profile_picture ?? asset('account-icon-default.jpg') }}"
                                         alt="Profile"
                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 </div>
@@ -110,7 +110,7 @@
                                 aria-expanded="false"
                                 style="width: 40px; height: 40px; padding: 0; border-radius: 50%; overflow: hidden;">
                                 <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
-                                    <img src="{{ Auth::user()->profile_picture ?? 'account-icon-default.jpg' }}"
+                                    <img src="{{ Auth::user()->profile_picture ?? asset('account-icon-default.jpg') }}"
                                         alt="Profile"
                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 </div>

@@ -63,9 +63,9 @@
                         <div class="input-group mb-3 form">
                             <div class="custom-file">
                                 <input type="file" name="poster_link" class="custom-file-input" id="inputGroupFile01"
-                                    accept=".jpg, .png" aria-describedby="inputGroupFileAddon01">
+                                    accept=".jpg, .png, .jpeg" aria-describedby="inputGroupFileAddon01">
                                 <label class="custom-file-label">
-                                    Pilih file (.jpg atau .png)
+                                    Pilih file (.jpg, .png, .jpeg)
                                 </label>
                             </div>
                         </div>
@@ -109,15 +109,13 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Waktu Mulai</label>
-                    <input type="text" name="sessions[__INDEX__][session_start]" id="timePicker"
-                        class="form-control" placeholder="HH:MM" required>
+                    <input type="datetime-local" name="sessions[__INDEX__][session_start]" class="form-control" required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Waktu Selesai</label>
-                    <input type="text" name="sessions[__INDEX__][session_end]" id="timePicker"
-                        class="form-control" placeholder="HH:MM" required>
+                    <input type="datetime-local" name="sessions[__INDEX__][session_end]" class="form-control" required>
                 </div>
             </div>
         </div>
@@ -134,8 +132,8 @@
             <div class="input-group mb-3">
                 <div class="custom-file">
                     <input type="file" name="sessions[__INDEX__][speaker_image]" class="custom-file-input"
-                        accept=".jpg, .png">
-                    <label class="custom-file-label">Pilih file (.jpg atau .png)</label>
+                        accept=".jpg, .png, .jpeg">
+                    <label class="custom-file-label">Pilih file (.jpg, .png, .jpeg)</label>
                 </div>
             </div>
         </div>
@@ -164,8 +162,13 @@
         const sessionNumber = sessionContainer.querySelectorAll('.session-block')[sessionIndex];
         sessionNumber.querySelector('.session-number').innerText = sessionIndex + 1;
 
-        // Inisialisasi ulang timepicker
-        flatpickr("#timePicker", {
+        // Inisialisasi ulang datapicker
+        flatpickr(".datetime-picker", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+        });
+        flatpickr(".time-picker", {
             noCalendar: true,
             enableTime: true,
             dateFormat: "H:i",

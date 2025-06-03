@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 const User = require('./User');
+const Event = require('./Event');
 const EventSession = require('./EventSession');
 
 const Registration = sequelize.define('registration', {
@@ -21,7 +22,7 @@ const Registration = sequelize.define('registration', {
         type: DataTypes.STRING(100),
         allowNull: true
     },
-    event_id: {
+    event_session_id: {
         type: DataTypes.STRING(15),
         allowNull: false
     },

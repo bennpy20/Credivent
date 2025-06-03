@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -12,7 +13,36 @@ class MemberScheduleController extends Controller
      */
     public function index()
     {
-        return view('member.schedule.index');
+        $response = Http::get('http://localhost:3000/api/member/member-event-index');
+
+        if ($response->successful()) {
+            $events = $response->json();
+
+            $events = array_map(function ($event) {
+                $start = Carbon::parse($event['start_date'])->locale('id');
+                $end = Carbon::parse($event['end_date'])->locale('id');
+
+                if ($start->isSameDay($end)) {
+                    $event['date_display'] = $start->translatedFormat('d F Y');  // ex: 27 Mei 2025
+                } else {
+                    if ($start->format('Y') == $end->format('Y')) {
+                        if ($start->format('F') == $end->format('F')) {
+                            $event['date_display'] = $start->format('d') . '-' . $end->translatedFormat('d F Y'); // ex: 27-28 Mei 2025
+                        } else {
+                            $event['date_display'] = $start->translatedFormat('d F') . ' - ' . $end->translatedFormat('d F Y'); // ex: 27 Mei - 02 Juni 2025
+                        }
+                    } else {
+                        $event['date_display'] = $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y'); // ex: 27 Mei 2025 - 02 Juni 2026
+                    }
+                }
+
+                return $event;
+            }, $events);
+
+            return view('member.schedule.index', compact('events'));
+        } else {
+            return back()->withErrors(['error' => 'Gagal mengambil data']);
+        }
     }
 
     /**
@@ -34,9 +64,30 @@ class MemberScheduleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        // Mengambil data event dari API Node.js
+        $response = Http::get("http://localhost:3000/api/member/member-event-show/{$id}");
+
+        if ($response->successful()) {
+            // Ambil data JSON dari API
+            $data = $response->json();
+
+            // Format jam mulai dan jam selesai menjadi jam:menit
+            $event_sessions = collect($data['event_sessions'])->map(function ($session) {
+                $session['session_start'] = Carbon::parse($session['session_start'])->format('H:i');
+                $session['session_end'] = Carbon::parse($session['session_end'])->format('H:i');
+                return $session;
+            });
+
+            // Kirim data event dan event_sessions dengan speakers ke view
+            return view('member.schedule.show', [
+                'event' => $data['event'],
+                'event_sessions' => $event_sessions,
+            ]);
+        } else {
+            return back()->withErrors(['error' => 'Gagal mengambil data event dan speaker']);
+        }
     }
 
     /**

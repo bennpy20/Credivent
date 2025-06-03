@@ -64,7 +64,7 @@ class CommitteeEventController extends Controller
         $request->validate([
             'name' => 'required|string|max:150',
             'location' => 'required|string|max:200',
-            'poster_link' => 'required|image|mimes:jpg,png|max:2048',
+            'poster_link' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'max_participants' => 'required|numeric',
             'transaction_fee' => 'required|numeric',
             'start_date' => 'required|date',
@@ -73,11 +73,11 @@ class CommitteeEventController extends Controller
             'sessions' => 'required|array|min:1',
             // Validasi setiap field dalam sessions
             'sessions.*.title' => 'required|string|max:150',
-            'sessions.*.session_start' => 'required|date_format:H:i',
-            'sessions.*.session_end' => 'required|date_format:H:i|after:sessions.*.session_start',
+            'sessions.*.session_start' => 'required|date_format:Y-m-d\TH:i',
+            'sessions.*.session_end' => 'required|date_format:Y-m-d\TH:i|after:sessions.*.session_start',
             'sessions.*.description' => 'nullable|string|max:500',
             'sessions.*.name' => 'required|string|max:100',
-            'sessions.*.speaker_image' => 'nullable|image|mimes:jpg,png|max:2048',
+            'sessions.*.speaker_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         // Simpan file poster
@@ -106,8 +106,8 @@ class CommitteeEventController extends Controller
         foreach ($sessionsInput as $index => $session) {
             $sessionData = [
                 'title' => $session['title'],
-                'session_start' => $session['session_start'],
-                'session_end' => $session['session_end'],
+                'session_start' => Carbon::createFromFormat('Y-m-d\TH:i', $session['session_start'], 'Asia/Jakarta')->format('Y-m-d H:i:s'),
+                'session_end' => Carbon::createFromFormat('Y-m-d\TH:i', $session['session_end'], 'Asia/Jakarta')->format('Y-m-d H:i:s'),
                 'description' => $session['description'],
                 'name' => $session['name'],
                 'speaker_image' => null // akan diisi di bawah jika file tersedia

@@ -134,8 +134,8 @@
             <div class="input-group mb-3">
                 <div class="custom-file">
                     <input type="file" name="sessions[__INDEX__][speaker_image]" class="custom-file-input"
-                        accept=".jpg, .png">
-                    <label class="custom-file-label">Pilih file (.jpg atau .png)</label>
+                        accept=".jpg, .png, .jpeg">
+                    <label class="custom-file-label">Pilih file (.jpg, .png, .jpeg)</label>
                 </div>
             </div>
         </div>
@@ -154,31 +154,32 @@
     let sessionIndexEdit = 0;
 
     function openEditModal(eventData) {
-        const container = document.getElementById('edit-session-container');
-        container.innerHTML = '';
-        sessionIndexEdit = 0;
+    const container = document.getElementById('edit-session-container');
+    container.innerHTML = '';
+    sessionIndexEdit = 0;
 
-        eventData.event_sessions.forEach((session, i) => {
-            const html = document.getElementById('session-template').innerHTML
-                .replace(/__INDEX__/g, sessionIndexEdit)
-                .replace('value=""', `value="${session.title}"`);
+    eventData.event_sessions.forEach((session, i) => {
+        const template = document.getElementById('session-template').innerHTML;
+        const html = template.replace(/__INDEX__/g, sessionIndexEdit);
+        container.insertAdjacentHTML('beforeend', html);
 
-            container.insertAdjacentHTML('beforeend', html);
-            container.querySelectorAll('.session-number')[i].innerText = i + 1;
+        const block = container.querySelectorAll('.session-block')[i];
 
-            // Manual set value
-            const block = container.querySelectorAll('.session-block')[i];
-            block.querySelector(`[name="sessions[${i}][title]"]`).value = session.title;
-            block.querySelector(`[name="sessions[${i}][session_start]"]`).value = session.session_start;
-            block.querySelector(`[name="sessions[${i}][session_end]"]`).value = session.session_end;
-            block.querySelector(`[name="sessions[${i}][description]"]`).value = session.description;
-            block.querySelector(`[name="sessions[${i}][name]"]`).value = session.name;
+        // Set session number label
+        block.querySelector('.session-number').innerText = sessionIndexEdit + 1;
 
-            sessionIndexEdit++;
-        });
+        // Isi field dengan data dari session
+        block.querySelector(`[name="sessions[${sessionIndexEdit}][title]"]`).value = session.title;
+        block.querySelector(`[name="sessions[${sessionIndexEdit}][session_start]"]`).value = session.session_start;
+        block.querySelector(`[name="sessions[${sessionIndexEdit}][session_end]"]`).value = session.session_end;
+        block.querySelector(`[name="sessions[${sessionIndexEdit}][description]"]`).value = session.description;
+        block.querySelector(`[name="sessions[${sessionIndexEdit}][name]"]`).value = session.name;
 
-        $('#modalEditEvent').modal('show');
-    }
+        sessionIndexEdit++;
+    });
+
+    $('#modalEditEvent').modal('show');
+}
 
     function addSessionEdit() {
         const template = document.getElementById('session-template').innerHTML;

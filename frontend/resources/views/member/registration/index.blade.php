@@ -5,16 +5,19 @@
 @endsection
 
 @section('content')
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('../memberast/images/bg_2.jpg');"
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('#');"
         data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
-                    <h1 class="mb-3 bread">Jadwal Event</h1>
+                    <h1 class="mb-3 bread">Event Terdaftar</h1>
                     <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i
-                                    class="ion-ios-arrow-forward"></i></a></span> <span>Jadwal <i
-                                class="ion-ios-arrow-forward"></i></span></p>
+                                    class="ion-ios-arrow-forward"></i></a></span>
+                        <span class="mr-2"><a href="index.html">Registrasi <i
+                                    class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Event Terdaftar <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -22,9 +25,12 @@
 
     <section class="ftco-section bg-light">
         <div class="container">
-            @if (!empty($events))
+            @if (!empty($registrations))
                 <div class="row d-flex">
-                    @foreach ($events as $event)
+                    @foreach ($registrations as $reg)
+                        @php
+                            $event = $reg['event'];
+                        @endphp
                         <div class="col-md-4 d-flex ftco-animate">
                             <div class="blog-entry justify-content-end">
                                 <a href="#" class="block-20"
@@ -36,59 +42,38 @@
                                     </div>
                                     <h3 class="heading mt-2"><strong>{{ $event['name'] }}</strong></h3>
                                     <p>Lokasi: {{ $event['location'] }}</p>
-                                    <p>Kapasitas Peserta:
-                                        {{ number_format($event['max_participants'], 0, ',', '.') }}</p>
-                                    <p>Biaya Tiket: Rp
-                                        {{ number_format($event['transaction_fee'], 0, ',', '.') }}</p>
-
-                                    <a href="{{ route('member.schedule.show', $event['id']) }}" class="btn btn-primary mt-2">
-                                        Detail event
+                                    <p>Status Bayar:
+                                        @if ($reg['payment_status'] == 1)
+                                            <span class="badge bg-success text-white">Sudah Bayar</span>
+                                        @else
+                                            <span class="badge bg-warning text-dark">Belum Bayar</span>
+                                        @endif
+                                    </p>
+                                    <a href="{{ route('member.registration.show', $event['id']) }}" class="btn btn-primary mt-2">
+                                        Detail Registrasi
                                     </a>
-                                    @if (session()->has('user') && session('user.role') == 2)
-                                        <a href="{{ route('member.registration.show', $event['id']) }}" class="btn btn-primary mt-2">
-                                            Registrasi
-                                        </a>
-                                    @endif
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
-                <!-- KALO KOSONG -->
-                <!-- Garis pemisah atas -->
+                <!-- JIKA TIDAK ADA DATA -->
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
 
                 <div class="text-center py-5">
-                    <!-- Ikon -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" class="text-secondary mb-3">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M9.75 9.75h.008v.008H9.75V9.75zm4.5 0h.008v.008H14.25V9.75zM12 15.75c1.5 0 2.25-.75 2.25-.75s-.75-1.5-2.25-1.5-2.25 1.5-2.25 1.5.75.75 2.25.75zm0 6.75a9.75 9.75 0 100-19.5 9.75 9.75 0 000 19.5z" />
                     </svg>
 
-                    <h4 class="text-muted">Data tidak ditemukan</h4>
-                    <p class="text-secondary">Silakan tambahkan data event terlebih dahulu</p>
+                    <h4 class="text-muted">Belum ada event yang Anda ikuti</h4>
+                    <p class="text-secondary">Silakan mendaftar ke event terlebih dahulu</p>
                 </div>
 
-                <!-- Garis pemisah bawah -->
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
             @endif
-            <div class="row mt-5">
-                <div class="col text-center">
-                    <div class="block-27">
-                        <ul>
-                            <li><a href="#">&lt;</a></li>
-                            <li class="active"><span>1</span></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li><a href="#">&gt;</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 

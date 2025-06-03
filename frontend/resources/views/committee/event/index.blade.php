@@ -36,7 +36,7 @@
                     @foreach ($events as $event)
                         <div class="col-md-4 d-flex ftco-animate">
                             <div class="blog-entry justify-content-end">
-                                <a href="blog-single.html" class="block-20"
+                                <a href="#" class="block-20"
                                     style="background-image: url('{{ $event['poster_link'] }}');">
                                 </a>
                                 <div class="text p-4 float-right d-block">

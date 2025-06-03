@@ -50,23 +50,34 @@ router.post('/committee-event-store', async (req, res) => {
             user_id
         }, { transaction: t });
 
+        // Ambil ID awal event session
+        let baseId = await generateEventSessionId();
+        let baseNumber = parseInt(baseId.split('-')[1]);
+
+        // Ambil ID awal speaker
+        let baseSpeakerId = await generateSpeakerId(); // e.g. SPK-002
+        let baseSpeakerNumber = parseInt(baseSpeakerId.split('-')[1]);
+
         // Simpan setiap sesi dan speaker
         for (let i = 0; i < event_sessions.length; i++) {
             const session = event_sessions[i];
 
-            const newEventSessionId = await generateEventSessionId();
+            const newEventSessionId = `ESE-${(baseNumber + i).toString().padStart(3, '0')}`;
+
+            const formattedStartEvent = new Date(session.session_start);
+            const formattedEndEvent = new Date(session.session_end);
 
             const newSession = await EventSession.create({
                 id: newEventSessionId,
                 event_id: newEvent.id,
                 session: i + 1,  // simpan urutan sesi ke kolom 'session'
                 title: session.title,
-                session_start: session.session_start,
-                session_end: session.session_end,
+                session_start: formattedStartEvent,
+                session_end: formattedEndEvent,
                 description: session.description
             }, { transaction: t });
 
-            const newSpeakerId = await generateSpeakerId();
+            const newSpeakerId = `SPK-${(baseSpeakerNumber + i).toString().padStart(3, '0')}`;
 
             await Speaker.create({
                 id: newSpeakerId,

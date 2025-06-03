@@ -6,6 +6,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <link rel="icon" href="{{ asset('credivent.png') }}" type="image/png">
+
     <!-- Link ke Bootstrap CSS dari CDN -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
@@ -60,23 +62,23 @@
         </svg></div>
 
 
-    <script src="../memberast/js/jquery.min.js"></script>
-    <script src="../memberast/js/jquery-migrate-3.0.1.min.js"></script>
-    <script src="../memberast/js/popper.min.js"></script>
-    <script src="../memberast/js/bootstrap.min.js"></script>
-    <script src="../memberast/js/jquery.easing.1.3.js"></script>
-    <script src="../memberast/js/jquery.waypoints.min.js"></script>
-    <script src="../memberast/js/jquery.stellar.min.js"></script>
-    <script src="../memberast/js/owl.carousel.min.js"></script>
-    <script src="../memberast/js/jquery.magnific-popup.min.js"></script>
-    <script src="../memberast/js/aos.js"></script>
-    <script src="../memberast/js/jquery.animateNumber.min.js"></script>
-    <script src="../memberast/js/bootstrap-datepicker.js"></script>
-    {{-- <script src="../memberast/js/jquery.timepicker.min.js"></script> --}}
-    <script src="../memberast/js/scrollax.min.js"></script>
+    <script src="{{ asset('memberast/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/jquery-migrate-3.0.1.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/popper.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/jquery.easing.1.3.js') }}"></script>
+    <script src="{{ asset('memberast/js/jquery.waypoints.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/jquery.stellar.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/aos.js') }}"></script>
+    <script src="{{ asset('memberast/js/jquery.animateNumber.min.js') }}"></script>
+    <script src="{{ asset('memberast/js/bootstrap-datepicker.js') }}"></script>
+    {{-- <script src="{{ asset('memberast/js/jquery.timepicker.min.js') }}"></script> --}}
+    <script src="{{ asset('memberast/js/scrollax.min.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-    <script src="../memberast/js/google-map.js"></script>
-    <script src="../memberast/js/main.js"></script>
+    <script src="{{ asset('memberast/js/google-map.js') }}"></script>
+    <script src="{{ asset('memberast/js/main.js') }}"></script>
 
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -109,7 +111,15 @@
             });
         });
     </script> --}}
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const loader = document.getElementById("ftco-loader");
+        if (loader) {
+            loader.classList.remove("show", "fullscreen");
+            loader.style.display = "none";
+        }
+    });
+</script>
 
 </body>
 

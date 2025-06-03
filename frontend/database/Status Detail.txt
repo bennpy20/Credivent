@@ -9,16 +9,15 @@ Acc status:
 2 = Non-aktif
 
 Payment status:
-1 = Berlangsung
+1 = Sedang diproses/berjalan
 2 = Gagal
 3 = Berhasil
 
 Attendance validity:
-1 = Datang
-2 = Tdk dating
+1 = Tidak/Blm Datang
+2 = Datang
 
 Event status:
-0 = Draft (untuk status saat pembuatan event)
 1 = Mendatang
 2 = Berlangsung/dibuka
 3 = Selesai
