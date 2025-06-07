@@ -15,39 +15,48 @@ class MemberRegistrationEventController extends Controller
     {
         // Kirim ke backend Node.js
         $user = session('user'); // Ambil data user dari session
-        // dd($user);
         $user_id = $user['id'];
-        dd(session('user'));
 
-        $response = Http::get('http://localhost:3000/member/member-registration-index', [
+        $response = Http::get('http://localhost:3000/api/member/member-registration-index', [
             'id' => $user_id
         ]);
 
-        dd($response->json());
-
         if ($response->successful()) {
             $registrations = $response->json();
-            
-            // $registrations = array_map(function ($item) {
-            //     $start = Carbon::parse($item['event']['start_date'])->locale('id');
-            //     $end = Carbon::parse($item['event']['end_date'])->locale('id');
 
-            //     if ($start->isSameDay($end)) {
-            //         $item['event']['date_display'] = $start->translatedFormat('d F Y');
-            //     } else {
-            //         if ($start->format('Y') == $end->format('Y')) {
-            //             if ($start->format('F') == $end->format('F')) {
-            //                 $item['event']['date_display'] = $start->format('d') . '-' . $end->translatedFormat('d F Y');
-            //             } else {
-            //                 $item['event']['date_display'] = $start->translatedFormat('d F') . ' - ' . $end->translatedFormat('d F Y');
-            //             }
-            //         } else {
-            //             $item['event']['date_display'] = $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y');
-            //         }
-            //     }
+            $registrations = array_map(function ($item) {
+                if (!isset($item['session']) || !isset($item['event'])) {
+                    return $item; // Skip jika tidak lengkap
+                }
+                $start = Carbon::parse($item['session']['session_start'])->locale('id');
+                $end = Carbon::parse($item['session']['session_end'])->locale('id');
 
-            //     return $item;
-            // }, $registrations);
+                // Format dinamis tergantung panjang range tanggal
+                if ($start->isSameDay($end)) {
+                    $formatted = $start->translatedFormat('d F Y H:i');
+                } elseif ($start->isSameMonth($end)) {
+                    $formatted = $start->format('d') . '-' . $end->translatedFormat('d F Y H:i');
+                } elseif ($start->year === $end->year) {
+                    $formatted = $start->translatedFormat('d F H:i') . ' - ' . $end->translatedFormat('d F Y H:i');
+                } else {
+                    $formatted = $start->translatedFormat('d F Y H:i') . ' - ' . $end->translatedFormat('d F Y H:i');
+                }
+
+                $item['event']['date_display'] = $formatted;
+
+                // Tambahkan logika status pembayaran
+                if ($item['event']['event_status'] === 1 && $item['payment_status'] === 1 && $item['payment_proof'] === "") {
+                    $item['registration_status'] = 'bayar';
+                } elseif ($item['event']['event_status'] === 1 && $item['payment_status'] === 1) {
+                    $item['registration_status'] = 'diproses';
+                } elseif ($item['payment_status'] === 2) {
+                    $item['registration_status'] = 'sukses';
+                } else {
+                    $item['registration_status'] = 'gagal';
+                }
+                
+                return $item;
+            }, $registrations);
 
             return view('member.registration.index', compact('registrations'));
         } else {
@@ -81,10 +90,11 @@ class MemberRegistrationEventController extends Controller
         ]);
 
         if ($response->successful()) {
-            return redirect()->route('member.registration.index')->with('success', 'Berhasil mendaftar pada sesi yang dipilih!');
+            return redirect()->route('member.registration.index')->with('success', 'Berhasil mendaftar event');
+        } else {
+            $errorMsg = $response->json('message') ?? 'Gagal mendaftar event';
+            return back()->with('error', $errorMsg);
         }
-
-        return back()->withErrors(['error' => 'Gagal menyimpan data']);
     }
 
     /**
@@ -127,7 +137,7 @@ class MemberRegistrationEventController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('member.registration.edit');
     }
 
     /**
@@ -135,7 +145,35 @@ class MemberRegistrationEventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
+
+        $paymentProofUrl = null;
+
+        if ($request->hasFile('payment_proof')) {
+            $file = $request->file('payment_proof');
+
+            // Nama file berdasarkan ID registrasi
+            $filename = 'payment_' . $id . '.' . $file->getClientOriginalExtension();
+
+            // Simpan ke folder public/payment_proofs
+            $file->move(public_path('payment_proofs'), $filename);
+
+            // Simpan full URL
+            $paymentProofUrl = url('payment_proofs/' . $filename);
+        }
+
+        // Kirim PUT request ke API Node.js
+        $response = Http::put("http://localhost:3000/api/member/member-registration-update/{$id}", [
+            'payment_proof' => $paymentProofUrl
+        ]);
+
+        if ($response->successful()) {
+            return redirect()->route('member.registration.index')->with('success', 'Bukti pembayaran berhasil diupload');
+        } else {
+            return back()->with(['error' => 'Gagal mengupload bukti pembayaran']);
+        }
     }
 
     /**

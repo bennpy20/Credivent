@@ -17,9 +17,9 @@ class AdminCommitteeController extends Controller
         if ($response->successful()) {
             $users = $response->json();
             return view('admin.committee.index', compact('users'));
+        } else {
+            return back()->withErrors(['error' => 'Gagal mengambil data']);
         }
-
-        return back()->withErrors(['error' => 'Gagal mengambil data']);
     }
 
     /**
@@ -50,9 +50,9 @@ class AdminCommitteeController extends Controller
         ]);
 
         if ($response->successful()) {
-            return redirect()->route('admin.committee.index')->with('success', 'Admin berhasil dibuat');
+            return redirect()->route('admin.committee.index')->with('success', 'Data panitia berhasil ditambahkan');
         } else {
-            return back()->withErrors(['error' => 'Gagal menambahkan user'])->withInput();
+            return back()->with(['error' => 'Gagal menambahkan data panitia']);
         }
     }
 
@@ -74,9 +74,9 @@ class AdminCommitteeController extends Controller
         if ($response->successful()) {
             $user = $response->json();
             return view('admin.committee.edit', compact('user'));
+        } else {
+            return back()->withErrors(['error' => 'Gagal mengambil data user']);
         }
-
-        return back()->withErrors(['error' => 'Gagal mengambil data user']);
     }
 
     /**
@@ -97,10 +97,10 @@ class AdminCommitteeController extends Controller
         ]);
 
         if ($response->successful()) {
-            return redirect()->route('admin.committee.index')->with('success', 'Data berhasil diperbarui');
+            return redirect()->route('admin.committee.index')->with('success', 'Data panitia berhasil diperbarui');
+        } else {
+            return back()->with(['error' => 'Gagal memperbarui data panitia']);
         }
-
-        return back()->withErrors(['error' => 'Gagal memperbarui data'])->withInput();
     }
 
     /**
@@ -111,9 +111,9 @@ class AdminCommitteeController extends Controller
         $response = Http::delete("http://localhost:3000/api/admin/admin-committee-destroy/{$id}");
 
         if ($response->successful()) {
-            return redirect()->route('admin.committee.index')->with('success', 'User berhasil dihapus');
+            return redirect()->route('admin.committee.index')->with('success', 'Data panitia berhasil dihapus');
+        } else {
+            return back()->with(['error' => 'Gagal menghapus data panitia']);
         }
-
-        return back()->withErrors(['error' => 'Gagal menghapus user']);
     }
 }

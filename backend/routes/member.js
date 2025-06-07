@@ -11,10 +11,16 @@ const Registration = require('../models/Registration');
 const Attendance = require('../models/Attendance');
 const generateRegistrationId = require('../utils/generateRegistrationId');
 const generateAttendanceId = require('../utils/generateAttendanceId');
+const updateEventStatus = require('../utils/updateEventStatus');
+// const { Op } = require('sequelize');
 
 //// Route untuk Panitia (Committee) kelola event
 router.get('/member-event-index', async (req, res) => {
-    const events = await Event.findAll();
+    const events = await Event.findAll({
+        where: {
+            event_status: [1, 2]
+        }
+    });
     res.json(events);
 });
 
@@ -138,6 +144,18 @@ router.post('/member-registration-store', async (req, res) => {
     }
 
     try {
+        // Cek apakah user sudah pernah mendaftar ke salah satu session
+        const existing = await Registration.findOne({
+            where: {
+                user_id,
+                event_session_id: session_ids  // Sequelize akan mengkonversi jadi IN()
+            }
+        });
+
+        if (existing) {
+            return res.status(409).json({ message: 'Kamu sudah mendaftar untuk salah satu sesi di event ini' });
+        }
+
         const registrations = [];
 
         for (const sessionId of session_ids) {
@@ -175,42 +193,45 @@ router.post('/member-registration-store', async (req, res) => {
 });
 
 router.get('/member-registration-index', async (req, res) => {
+    await updateEventStatus();
     const userId = req.query.id;
 
     try {
-        // 1. Ambil semua registration berdasarkan user_id
         const registrations = await Registration.findAll({
             where: { user_id: userId }
         });
 
-        const results = [];
-
-        for (const reg of registrations) {
-            // 2. Ambil session berdasarkan registration
+        const results = await Promise.all(registrations.map(async (reg) => {
             const session = await EventSession.findByPk(reg.event_session_id);
+            if (!session) return null;
 
-            // 3. Ambil event dari session
             const event = await Event.findByPk(session.event_id);
+            if (!event) return null;
 
-            // 4. Ambil attendance berdasarkan registration
             const attendance = await Attendance.findOne({
                 where: { registration_id: reg.id }
             });
 
-            // 5. Bentuk data akhir
-            results.push({
+            return {
                 registration_id: reg.id,
+                payment_proof: reg.payment_proof,
                 payment_status: reg.payment_status,
                 qrcode: reg.qrcode,
                 session: {
                     id: session.id,
+                    session: session.session,
                     title: session.title,
                     session_start: session.session_start,
-                    session_end: session.session_end
+                    session_end: session.session_end,
+                    description: session.description
                 },
                 event: {
                     id: event.id,
                     name: event.name,
+                    poster_link: event.poster_link,
+                    max_participants: event.max_participants,
+                    transaction_fee: event.transaction_fee,
+                    event_status: event.event_status,
                     start_date: event.start_date,
                     end_date: event.end_date
                 },
@@ -219,13 +240,32 @@ router.get('/member-registration-index', async (req, res) => {
                     validity: attendance.validity,
                     certificate_link: attendance.certificate_link
                 } : null
-            });
-        }
+            };
+        }));
 
-        return res.json(results);
+        // Filter null jika ada data tidak ditemukan
+        const filteredResults = results.filter(item => item !== null);
+
+        return res.json(filteredResults);
     } catch (error) {
         console.error('Gagal mengambil data registrasi user:', error);
         return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+    }
+});
+
+router.put('/member-registration-update/:id', async (req, res) => {
+    const { payment_proof } = req.body;
+    try {
+        const registration = await Registration.findByPk(req.params.id);
+        if (!registration) return res.status(404).json({ message: 'Data tidak ditemukan' });
+
+        registration.payment_proof = payment_proof;
+        await registration.save();
+
+        res.json({ status: 'success', message: 'Bukti pembayaran diperbarui' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 'error', message: 'Server error' });
     }
 });
 

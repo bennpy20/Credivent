@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class CommitteeEventController extends Controller
 {
@@ -68,13 +67,13 @@ class CommitteeEventController extends Controller
             'max_participants' => 'required|numeric',
             'transaction_fee' => 'required|numeric',
             'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
             // Validasi session
             'sessions' => 'required|array|min:1',
             // Validasi setiap field dalam sessions
             'sessions.*.title' => 'required|string|max:150',
-            'sessions.*.session_start' => 'required|date_format:Y-m-d\TH:i',
-            'sessions.*.session_end' => 'required|date_format:Y-m-d\TH:i|after:sessions.*.session_start',
+            'sessions.*.session_start' => 'required|date_format:Y-m-d H:i',
+            'sessions.*.session_end' => 'required|date_format:Y-m-d H:i|after:sessions.*.session_start',
             'sessions.*.description' => 'nullable|string|max:500',
             'sessions.*.name' => 'required|string|max:100',
             'sessions.*.speaker_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
@@ -106,8 +105,8 @@ class CommitteeEventController extends Controller
         foreach ($sessionsInput as $index => $session) {
             $sessionData = [
                 'title' => $session['title'],
-                'session_start' => Carbon::createFromFormat('Y-m-d\TH:i', $session['session_start'], 'Asia/Jakarta')->format('Y-m-d H:i:s'),
-                'session_end' => Carbon::createFromFormat('Y-m-d\TH:i', $session['session_end'], 'Asia/Jakarta')->format('Y-m-d H:i:s'),
+                'session_start' => Carbon::createFromFormat('Y-m-d H:i', $session['session_start'], 'Asia/Jakarta')->format('Y-m-d H:i:s'),
+                'session_end' => Carbon::createFromFormat('Y-m-d H:i', $session['session_end'], 'Asia/Jakarta')->format('Y-m-d H:i:s'),
                 'description' => $session['description'],
                 'name' => $session['name'],
                 'speaker_image' => null // akan diisi di bawah jika file tersedia
@@ -135,8 +134,6 @@ class CommitteeEventController extends Controller
         $user = session('user'); // Ambil data user dari session
         $user_id = $user['id'];
 
-        // $eventSessions = $request->input('sessions');
-
         $response = Http::post('http://localhost:3000/api/committee/committee-event-store', [
             'name' => $request->name,
             'location' => $request->location,
@@ -154,7 +151,7 @@ class CommitteeEventController extends Controller
         if ($response->successful()) {
             return redirect()->route('committee.event.index')->with('success', 'Event berhasil dibuat');
         } else {
-            return back()->withErrors(['error' => 'Gagal menambahkan user'])->withInput();
+            return back()->with(['error' => 'Gagal menambahkan event']);
         }
     }
 

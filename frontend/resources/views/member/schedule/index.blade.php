@@ -48,6 +48,10 @@
                                         <a href="{{ route('member.registration.show', $event['id']) }}" class="btn btn-primary mt-2">
                                             Registrasi
                                         </a>
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn btn-primary mt-2">
+                                            Registrasi
+                                        </a>
                                     @endif
                                 </div>
                             </div>
@@ -56,22 +60,16 @@
                 </div>
             @else
                 <!-- KALO KOSONG -->
-                <!-- Garis pemisah atas -->
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
-
                 <div class="text-center py-5">
-                    <!-- Ikon -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" class="text-secondary mb-3">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M9.75 9.75h.008v.008H9.75V9.75zm4.5 0h.008v.008H14.25V9.75zM12 15.75c1.5 0 2.25-.75 2.25-.75s-.75-1.5-2.25-1.5-2.25 1.5-2.25 1.5.75.75 2.25.75zm0 6.75a9.75 9.75 0 100-19.5 9.75 9.75 0 000 19.5z" />
                     </svg>
-
                     <h4 class="text-muted">Data tidak ditemukan</h4>
                     <p class="text-secondary">Silakan tambahkan data event terlebih dahulu</p>
                 </div>
-
-                <!-- Garis pemisah bawah -->
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
             @endif
             <div class="row mt-5">

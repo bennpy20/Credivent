@@ -74,10 +74,10 @@
                                                 </svg>
                                             </button>
                                         </a>
-                                        <form action="{{ route('admin.financeteam.destroy', $user['id']) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus user ini?')" style="display:inline;">
+                                        <form action="{{ route('admin.financeteam.destroy', $user['id']) }}" method="POST" id="delete-form-{{ $user['id'] }}" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
+                                            <button type="button" onclick="confirmDelete('{{ $user['id'] }}')"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                 aria-label="Delete">
                                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"

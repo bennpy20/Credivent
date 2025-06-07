@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminFinanceTeamController;
 use App\Http\Controllers\AdminCommitteeController;
 use App\Http\Controllers\CommitteeEventController;
 use App\Http\Controllers\EventFlowController;
+use App\Http\Controllers\FinanceTeamRegistrationController;
 use App\Http\Controllers\MemberRegistrationEventController;
 use App\Http\Controllers\MemberScheduleController;
 
@@ -45,6 +46,16 @@ Route::prefix('committee')->name('committee.')->middleware('role:3')->group(func
 
     Route::resource('event', CommitteeEventController::class, [
         'parameters' => ['event' => 'id']
+    ]);
+});
+
+Route::prefix('financeteam')->name('financeteam.')->middleware('role:4')->group(function () {
+    // Route::get('/', function () {
+    //     return view('/member/index');
+    // })->name('index');
+
+    Route::resource('registration', FinanceTeamRegistrationController::class, [
+        'parameters' => ['registration' => 'id']
     ]);
 });
 

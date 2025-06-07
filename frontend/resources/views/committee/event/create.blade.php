@@ -109,13 +109,13 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Waktu Mulai</label>
-                    <input type="datetime-local" name="sessions[__INDEX__][session_start]" class="form-control" required>
+                    <input type="text" name="sessions[__INDEX__][session_start]" class="form-control datetime-picker" required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Waktu Selesai</label>
-                    <input type="datetime-local" name="sessions[__INDEX__][session_end]" class="form-control" required>
+                    <input type="text" name="sessions[__INDEX__][session_end]" class="form-control datetime-picker" required>
                 </div>
             </div>
         </div>
@@ -166,12 +166,6 @@
         flatpickr(".datetime-picker", {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-            time_24hr: true,
-        });
-        flatpickr(".time-picker", {
-            noCalendar: true,
-            enableTime: true,
-            dateFormat: "H:i",
             time_24hr: true,
         });
         // Inisialisasi ulang utk file input

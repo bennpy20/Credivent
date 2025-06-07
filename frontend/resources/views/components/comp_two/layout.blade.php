@@ -111,15 +111,58 @@
             });
         });
     </script> --}}
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const loader = document.getElementById("ftco-loader");
-        if (loader) {
-            loader.classList.remove("show", "fullscreen");
-            loader.style.display = "none";
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const loader = document.getElementById("ftco-loader");
+            if (loader) {
+                loader.classList.remove("show", "fullscreen");
+                loader.style.display = "none";
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        //message with sweetalert
+        @if (session('success'))
+            Swal.fire({
+                icon: "success",
+                title: "BERHASIL",
+                text: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        @elseif (session('error'))
+            Swal.fire({
+                icon: "error",
+                title: "GAGAL!",
+                text: "{{ session('error') }}",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        @endif
+    </script>
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: "Apakah kamu yakin?",
+                text: "Data yang dihapus tidak dapat dikembalikan",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#c0c0c0",
+                confirmButtonText: "Ya, hapus",
+                customClass: {
+                    confirmButton: 'focus:outline-none',
+                    cancelButton: 'focus:outline-none'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${id}`).submit();
+                }
+            });
         }
-    });
-</script>
+    </script>
 
 </body>
 

@@ -9,9 +9,12 @@ const Speaker = require('../models/Speaker');
 const generateEventId = require('../utils/generateEventId');
 const generateEventSessionId = require('../utils/generateEventSessionId');
 const generateSpeakerId = require('../utils/generateSpeakerId');
+const moment = require('moment-timezone');
+const updateEventStatus = require('../utils/updateEventStatus');
 
 //// Route untuk Panitia (Committee) kelola event
 router.get('/committee-event-index', async (req, res) => {
+    await updateEventStatus();
     const events = await Event.findAll();
     res.json(events);
 });
@@ -64,8 +67,9 @@ router.post('/committee-event-store', async (req, res) => {
 
             const newEventSessionId = `ESE-${(baseNumber + i).toString().padStart(3, '0')}`;
 
-            const formattedStartEvent = new Date(session.session_start);
-            const formattedEndEvent = new Date(session.session_end);
+            const formattedStartEvent = moment.tz(session.session_start, 'YYYY-MM-DD HH:mm', 'Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+            const formattedEndEvent = moment.tz(session.session_end, 'YYYY-MM-DD HH:mm', 'Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+
 
             const newSession = await EventSession.create({
                 id: newEventSessionId,

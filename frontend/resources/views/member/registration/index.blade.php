@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('#');"
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('../memberast/images/bg_2.jpg');"
         data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
@@ -13,11 +13,8 @@
                 <div class="col-md-9 ftco-animate pb-5">
                     <h1 class="mb-3 bread">Event Terdaftar</h1>
                     <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i
-                                    class="ion-ios-arrow-forward"></i></a></span>
-                        <span class="mr-2"><a href="index.html">Registrasi <i
-                                    class="ion-ios-arrow-forward"></i></a></span>
-                        <span>Event Terdaftar <i class="ion-ios-arrow-forward"></i></span>
-                    </p>
+                                    class="ion-ios-arrow-forward"></i></a></span> <span>Event Terdaftar <i
+                                class="ion-ios-arrow-forward"></i></span></p>
                 </div>
             </div>
         </div>
@@ -25,42 +22,66 @@
 
     <section class="ftco-section bg-light">
         <div class="container">
-            @if (!empty($registrations))
+            @if (!empty($registrations) && count($registrations) > 0)
                 <div class="row d-flex">
-                    @foreach ($registrations as $reg)
-                        @php
-                            $event = $reg['event'];
-                        @endphp
+                    @foreach ($registrations as $registration)
                         <div class="col-md-4 d-flex ftco-animate">
                             <div class="blog-entry justify-content-end">
                                 <a href="#" class="block-20"
-                                    style="background-image: url('{{ $event['poster_link'] }}');">
+                                    style="background-image: url('{{ $registration['event']['poster_link'] }}');">
                                 </a>
                                 <div class="text p-4 float-right d-block">
+                                    <h3 class="heading mt-2"><strong>{{ $registration['event']['name'] }}</strong></h3>
                                     <div class="d-flex align-items-center pt-2 mb-4">
-                                        <div class="event-date-display">{{ $event['date_display'] }}</div>
+                                        <div class="event-date-display">{{ $registration['event']['date_display'] }}
+                                        </div>
                                     </div>
-                                    <h3 class="heading mt-2"><strong>{{ $event['name'] }}</strong></h3>
-                                    <p>Lokasi: {{ $event['location'] }}</p>
-                                    <p>Status Bayar:
-                                        @if ($reg['payment_status'] == 1)
-                                            <span class="badge bg-success text-white">Sudah Bayar</span>
-                                        @else
-                                            <span class="badge bg-warning text-dark">Belum Bayar</span>
-                                        @endif
+                                    <p>Sesi {{ $registration['session']['session'] }}
                                     </p>
-                                    <a href="{{ route('member.registration.show', $event['id']) }}" class="btn btn-primary mt-2">
-                                        Detail Registrasi
-                                    </a>
+                                    <p>Biaya Tiket: Rp
+                                        {{ number_format($registration['event']['transaction_fee'], 0, ',', '.') }}
+                                    </p>
+                                    @switch($registration['registration_status'])
+                                        @case('bayar')
+                                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                data-target="#modalPayment{{ $registration['registration_id'] }}">
+                                                Upload Bukti Pembayaran
+                                            </button>
+                                            <p class="text-muted mt-2">Silakan unggah bukti pembayaran Anda untuk proses registrasi</p>
+                                        @break
+
+                                        @case('diproses')
+                                            <div class="alert alert-info p-2 mt-2 mb-0">
+                                                <strong>Menunggu Verifikasi</strong><br>
+                                                Bukti pembayaran Anda sedang diproses oleh tim keuangan
+                                            </div>
+                                        @break
+
+                                        @case('sukses')
+                                            <a href="#" class="btn btn-success mt-2">
+                                                <i class="fas fa-receipt"></i> Lihat Detail Pembayaran
+                                            </a>
+                                            <a href="#" class="btn btn-outline-success mt-2">
+                                                <i class="fas fa-qrcode"></i> Tampilkan QR Code
+                                            </a>
+                                            <p class="text-success mt-2 mb-0">Pembayaran telah dikonfirmasi. Terima kasih!</p>
+                                        @break
+
+                                        @default
+                                            <div class="alert alert-danger p-2 mt-2 mb-0">
+                                                <strong>Pembayaran Gagal</strong><br>
+                                                Bukti pembayaran belum valid. Silakan registrasi ulang event
+                                            </div>
+                                    @endswitch
                                 </div>
                             </div>
                         </div>
+                        @include('member.registration.edit', ['registration' => $registration])
                     @endforeach
                 </div>
             @else
-                <!-- JIKA TIDAK ADA DATA -->
+                <!-- Jika kosong -->
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
-
                 <div class="text-center py-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" class="text-secondary mb-3">
@@ -68,10 +89,9 @@
                             d="M9.75 9.75h.008v.008H9.75V9.75zm4.5 0h.008v.008H14.25V9.75zM12 15.75c1.5 0 2.25-.75 2.25-.75s-.75-1.5-2.25-1.5-2.25 1.5-2.25 1.5.75.75 2.25.75zm0 6.75a9.75 9.75 0 100-19.5 9.75 9.75 0 000 19.5z" />
                     </svg>
 
-                    <h4 class="text-muted">Belum ada event yang Anda ikuti</h4>
-                    <p class="text-secondary">Silakan mendaftar ke event terlebih dahulu</p>
+                    <h4 class="text-muted">Belum ada pendaftaran event</h4>
+                    <p class="text-secondary">Silakan registrasi event terlebih dahulu</p>
                 </div>
-
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
             @endif
         </div>

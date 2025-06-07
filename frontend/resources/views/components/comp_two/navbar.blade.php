@@ -119,7 +119,7 @@
                             <!-- Menu dropdown -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="#">Profil</a></li>
-                                <li><a class="dropdown-item" href="#">Kelola Keuangan</a></li>
+                                <li><a class="dropdown-item" href="{{ route('financeteam.registration.index') }}">Kelola Keuangan</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>

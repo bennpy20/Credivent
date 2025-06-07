@@ -7,9 +7,9 @@
     <title>Login</title>
     <link rel="icon" href="{{ asset('credivent.png') }}" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="../assets/css/tailwind.output.css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/tailwind.output.css') }}" />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-    <script src="../assets/js/init-alpine.js"></script>
+    <script src="{{ asset('assets/js/init-alpine.js') }}"></script>
 </head>
 
 <body>
@@ -26,6 +26,13 @@
                     <div class="w-full">
                         <form method="POST" action="{{ route('login.submit') }}">
                             @csrf
+                            @if ($errors->has('login'))
+                                <div
+                                    class="w-full p-3 mb-4 text-sm font-semibold text-red-700 bg-red-100 border border-red-400 rounded">
+                                    {{ $errors->first('login') }}
+                                </div>
+                            @endif
+
                             <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
                                 Login
                             </h1>

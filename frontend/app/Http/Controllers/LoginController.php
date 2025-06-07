@@ -32,7 +32,7 @@ class LoginController extends Controller
             return redirect()->route('member.index');
         } else {
             // dd($response->status(), $response->body());
-            return back()->withErrors(['login' => 'Login gagal.'])->withInput();
+            return back()->withErrors(['login' => 'Email atau password salah'])->withInput();
         }
     }
 
