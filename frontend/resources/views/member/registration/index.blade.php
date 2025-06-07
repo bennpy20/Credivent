@@ -47,24 +47,28 @@
                                                 data-target="#modalPayment{{ $registration['registration_id'] }}">
                                                 Upload Bukti Pembayaran
                                             </button>
-                                            <p class="text-muted mt-2">Silakan unggah bukti pembayaran Anda untuk proses registrasi</p>
                                         @break
 
                                         @case('diproses')
-                                            <div class="alert alert-info p-2 mt-2 mb-0">
-                                                <strong>Menunggu Verifikasi</strong><br>
-                                                Bukti pembayaran Anda sedang diproses oleh tim keuangan
+                                            <a href="#" class="btn btn-outline-info mt-2 view-proof"
+                                                data-image="{{ $registration['payment_proof'] }}">
+                                                <i class="fas fa-receipt pr-2"></i> Lihat Bukti Pembayaran
+                                            </a>
+                                            <div class="alert alert-info d-flex align-items-center p-2 mt-2 rounded-sm shadow-sm"
+                                                role="alert">
+                                                <i class="fas fa-hourglass-half px-1 mr-2"></i>
+                                                Sedang Diverifikasi
                                             </div>
                                         @break
 
                                         @case('sukses')
+                                            <a href="#" class="btn btn-outline-info mt-2 view-proof"
+                                                data-image="{{ $registration['payment_proof'] }}">
+                                                <i class="fas fa-receipt pr-2"></i> Lihat Bukti Pembayaran
+                                            </a>
                                             <a href="#" class="btn btn-success mt-2">
-                                                <i class="fas fa-receipt"></i> Lihat Detail Pembayaran
+                                                <i class="fas fa-qrcode pr-2"></i> Tampilkan QR Code
                                             </a>
-                                            <a href="#" class="btn btn-outline-success mt-2">
-                                                <i class="fas fa-qrcode"></i> Tampilkan QR Code
-                                            </a>
-                                            <p class="text-success mt-2 mb-0">Pembayaran telah dikonfirmasi. Terima kasih!</p>
                                         @break
 
                                         @default
@@ -73,6 +77,25 @@
                                                 Bukti pembayaran belum valid. Silakan registrasi ulang event
                                             </div>
                                     @endswitch
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal Bukti Pembayaran Member -->
+                        <div class="modal fade" id="paymentProofMemberModal" tabindex="-1" role="dialog"
+                            aria-labelledby="paymentProofMemberModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="paymentProofMemberModalLabel">Bukti
+                                            Pembayaran</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img src="" id="paymentProofImage" class="img-fluid" alt="Bukti Pembayaran"
+                                            style="max-height: 500px;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -120,4 +143,13 @@
             </div>
         </div>
     </section>
+
+    <script>
+        $(document).on('click', '.view-proof', function(e) {
+            e.preventDefault();
+            var imageUrl = $(this).data('image');
+            $('#paymentProofImage').attr('src', imageUrl);
+            $('#paymentProofMemberModal').modal('show'); // ganti sesuai ID modal kamu
+        });
+    </script>
 @endsection

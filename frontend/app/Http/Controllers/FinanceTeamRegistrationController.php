@@ -12,7 +12,26 @@ class FinanceTeamRegistrationController extends Controller
      */
     public function index()
     {
-        return view('financeteam.registration.index');
+        $response = Http::get('http://localhost:3000/api/financeteam/financeteam-registration-index');
+
+        if ($response->successful()) {
+            $registrations = $response->json();
+
+            $registrations = array_map(function ($item) {
+                $item['status_display'] = match ($item['payment_status']) {
+                    1 => 'Menunggu Verifikasi',
+                    2 => 'Disetujui',
+                    3 => 'Ditolak',
+                    default => 'Belum Bayar',
+                };
+
+                return $item;
+            }, $registrations);
+
+            return view('financeteam.registration.index', compact('registrations'));
+        } else {
+            return back()->withErrors(['error' => 'Gagal mengambil data pembayaran']);
+        }
     }
 
     /**
@@ -52,7 +71,20 @@ class FinanceTeamRegistrationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'payment_status' => 'required|integer|in:2,3'
+        ]);
+
+        $response = Http::put("http://localhost:3000/api/financeteam/financeteam-registration-update/{$id}", [
+            'payment_status' => (int) $request->payment_status,
+        ]);
+
+        if ($response->successful()) {
+            $message = $request->payment_status == 2 ? 'Pembayaran berhasil disetujui' : 'Pembayaran berhasil ditolak';
+            return redirect()->route('financeteam.registration.index')->with('success', $message);
+        } else {
+            return back()->with(['error' => 'Gagal memperbarui status pembayaran']);
+        }
     }
 
     /**

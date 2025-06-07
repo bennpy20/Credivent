@@ -22,65 +22,171 @@
 
     <section class="ftco-section bg-light">
         <div class="container">
-            {{-- <div class="d-flex justify-content-end mb-4">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalCreateEvent">
-                    Tambah Event
-                </button>
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0 text-white">Daftar Pembayaran Peserta</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Peserta</th>
+                                    {{-- <th>Email</th> --}}
+                                    <th>Nama Event</th>
+                                    <th>Harga</th>
+                                    <th>Bukti Bayar</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($registrations as $registration)
+                                    @if ($registration['payment_status'] === 1)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $registration['user']['name'] }}</td>
+                                            {{-- <td>ayu@example.com</td> --}}
+                                            <td>{{ $registration['event']['name'] }} (Sesi
+                                                {{ $registration['session']['session'] }})</td>
+                                            <td>Rp
+                                                {{ number_format($registration['event']['transaction_fee'], 0, ',', '.') }}
+                                            </td>
 
-                @include('committee.event.create')
+                                            {{-- <td><span class="badge badge-secondary">Belum Bayar</span></td> --}}
+                                            @if ($registration['payment_proof'] != '')
+                                                <td><a href="#" class="btn btn-sm btn-info view-proof"
+                                                        data-image="{{ $registration['payment_proof'] }}">Lihat</a></td>
+                                            @else
+                                                <td><span class="text-muted">-</span></td>
+                                            @endif
+                                            <td class="text-nowrap">
+                                                <!-- Tombol Setujui -->
+                                                <form id="approve-form-{{ $registration['registration_id'] }}"
+                                                    action="{{ route('financeteam.registration.update', $registration['registration_id']) }}"
+                                                    method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="payment_status" value="2">
+                                                </form>
+                                                <button type="button" class="btn btn-success btn-sm mr-1"
+                                                    onclick="confirmApproval('{{ $registration['registration_id'] }}')">
+                                                    <i class="fas fa-check"></i> Setujui
+                                                </button>
+
+                                                <!-- Tombol Tolak -->
+                                                <form id="reject-form-{{ $registration['registration_id'] }}"
+                                                    action="{{ route('financeteam.registration.update', $registration['registration_id']) }}"
+                                                    method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="payment_status" value="3">
+                                                </form>
+                                                <button type="button" class="btn btn-danger btn-sm"
+                                                    onclick="confirmRejection('{{ $registration['registration_id'] }}')">
+                                                    <i class="fas fa-times"></i> Tolak
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <!-- Modal Bukti Bayar -->
+                                        <div class="modal fade" id="paymentProofModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="paymentProofModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="paymentProofModalLabel">Bukti Pembayaran
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Tutup">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body text-center">
+                                                        <img src="" id="paymentProofImage" class="img-fluid"
+                                                            alt="Bukti Pembayaran" style="max-height: 500px;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            @if (!empty($events))
-                <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
-                <div class="row d-flex">
-                    @foreach ($events as $event)
-                        <div class="col-md-4 d-flex ftco-animate">
-                            <div class="blog-entry justify-content-end">
-                                <a href="#" class="block-20"
-                                    style="background-image: url('{{ $event['poster_link'] }}');">
-                                </a>
-                                <div class="text p-4 float-right d-block">
-                                    <div class="d-flex align-items-center pt-2 mb-4">
-                                        <div class="event-date-display">{{ $event['date_display'] }}</div>
-                                    </div>
-                                    <h3 class="heading mt-2"><strong>{{ $event['name'] }}</strong></h3>
-                                    <p>Lokasi: {{ $event['location'] }}</p>
-                                    <p>Kapasitas Peserta:
-                                        {{ number_format($event['max_participants'], 0, ',', '.') }}</p>
-                                    <p>Biaya Tiket: Rp
-                                        {{ number_format($event['transaction_fee'], 0, ',', '.') }}</p>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#modalUpdateEvent{{ $event['id'] }}">
-                                        Edit Event
-                                    </button>
 
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        @include('committee.event.edit', ['event' => $event])
-                    @endforeach
+            <div class="card shadow mt-5">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0 text-white">History Pengelolaan Keuangan</h5>
                 </div>
-            @else
-                <!-- KALO KOSONG -->
-                <!-- Garis pemisah atas -->
-                <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Peserta</th>
+                                    {{-- <th>Email</th> --}}
+                                    <th>Nama Event</th>
+                                    <th>Harga</th>
+                                    <th>Bukti Bayar</th>
+                                    <th>Status Pembayaran</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($registrations as $registration)
+                                    @if ($registration['payment_status'] != 1)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $registration['user']['name'] }}</td>
+                                            {{-- <td>ayu@example.com</td> --}}
+                                            <td>{{ $registration['event']['name'] }} (Sesi
+                                                {{ $registration['session']['session'] }})</td>
+                                            <td>Rp
+                                                {{ number_format($registration['event']['transaction_fee'], 0, ',', '.') }}
+                                            </td>
 
-                <div class="text-center py-5">
-                    <!-- Ikon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" class="text-secondary mb-3">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M9.75 9.75h.008v.008H9.75V9.75zm4.5 0h.008v.008H14.25V9.75zM12 15.75c1.5 0 2.25-.75 2.25-.75s-.75-1.5-2.25-1.5-2.25 1.5-2.25 1.5.75.75 2.25.75zm0 6.75a9.75 9.75 0 100-19.5 9.75 9.75 0 000 19.5z" />
-                    </svg>
-
-                    <h4 class="text-muted">Data tidak ditemukan</h4>
-                    <p class="text-secondary">Silakan tambahkan data event terlebih dahulu</p>
+                                            {{-- <td><span class="badge badge-secondary">Belum Bayar</span></td> --}}
+                                            @if ($registration['payment_proof'] != '')
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-info view-proof"
+                                                        data-image="{{ $registration['payment_proof'] }}">Lihat
+                                                    </a>
+                                                </td>
+                                            @else
+                                                <td><span class="text-muted">-</span></td>
+                                            @endif
+                                            <td>{{ $registration['status_display'] }}</td>
+                                        </tr>
+                                        <!-- Modal Bukti Bayar -->
+                                        <div class="modal fade" id="paymentProofModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="paymentProofModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="paymentProofModalLabel">Bukti Pembayaran
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Tutup">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body text-center">
+                                                        <img src="" id="paymentProofImage" class="img-fluid"
+                                                            alt="Bukti Pembayaran" style="max-height: 500px;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-                <!-- Garis pemisah bawah -->
-                <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
-            @endif --}}
+            </div>
 
             <div class="row mt-5">
                 <div class="col text-center">
@@ -171,4 +277,13 @@
             </div>
         </div>
     </section>
+
+    <script>
+        $(document).on('click', '.view-proof', function(e) {
+            e.preventDefault();
+            var imageUrl = $(this).data('image');
+            $('#paymentProofImage').attr('src', imageUrl);
+            $('#paymentProofModal').modal('show');
+        });
+    </script>
 @endsection

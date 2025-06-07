@@ -112,7 +112,7 @@
         });
     </script> --}}
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const loader = document.getElementById("ftco-loader");
             if (loader) {
                 loader.classList.remove("show", "fullscreen");
@@ -159,6 +159,48 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById(`delete-form-${id}`).submit();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function confirmApproval(id) {
+            Swal.fire({
+                title: 'Setujui pembayaran?',
+                text: "Tindakan ini akan menyetujui pembayaran peserta",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, setujui!',
+                customClass: {
+                    confirmButton: 'focus:outline-none',
+                    cancelButton: 'focus:outline-none'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('approve-form-' + id).submit();
+                }
+            });
+        }
+
+        function confirmRejection(id) {
+            Swal.fire({
+                title: 'Tolak pembayaran?',
+                text: "Tindakan ini akan menolak pembayaran peserta",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, tolak!',
+                customClass: {
+                    confirmButton: 'focus:outline-none',
+                    cancelButton: 'focus:outline-none'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('reject-form-' + id).submit();
                 }
             });
         }
