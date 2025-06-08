@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt');
 const Event = require('../models/Event');
 const EventSession = require('../models/EventSession');
 const Speaker = require('../models/Speaker');
+const Registration = require('../models/Registration');
+const Attendance = require('../models/Attendance');
 const generateEventId = require('../utils/generateEventId');
 const generateEventSessionId = require('../utils/generateEventSessionId');
 const generateSpeakerId = require('../utils/generateSpeakerId');
@@ -106,6 +108,64 @@ router.post('/committee-event-store', async (req, res) => {
         console.error(error);
         res.status(500).json({ status: 'error', message: 'Server error' });
     }
-})
+});
+
+
+// Scan untuk QRCode
+router.post('/committee-scanqr-store', async (req, res) => {
+    const { qr_data } = req.body;
+
+    try {
+        const data = JSON.parse(qr_data); // Parsing JSON dari QR
+
+        const registration = await Registration.findOne({ where: { id: data.registration_id } });
+
+        if (!registration || registration.qrcode === null) {
+            return res.status(200).json({ valid: false, message: "Data registrasi tidak ditemukan" });
+        }
+
+        const session = await EventSession.findByPk(data.session_id);
+        const nowUTC = new Date();
+        
+        // Geser UTC ke WIB (Asia/Jakarta = UTC+7)
+        const nowWIB = new Date(nowUTC.getTime() + (7 * 60 * 60 * 1000));
+        const sessionStart = new Date(session.session_start);
+        const sessionEnd = new Date(session.session_end);
+
+        if (nowWIB < sessionStart) {
+            return res.status(200).json({ valid: false, message: "Acara belum dimulai" });
+        }
+
+        if (nowWIB > sessionEnd) {
+            return res.status(200).json({ valid: false, message: "Acara telah berakhir" });
+        }
+
+        const attendance = await Attendance.findOne({ where: { registration_id: data.registration_id } });
+
+        if (!attendance) {
+            return res.status(404).json({ valid: false, message: 'Data attendance tidak ditemukan' });
+        }
+
+        if (attendance.validity === 2) {
+            return res.status(400).json({ valid: false, message: 'Peserta sudah tercatat hadir' });
+        }
+
+        attendance.validity = 2;
+        await attendance.save();
+
+        // QR valid dan dalam waktu acara
+        return res.status(200).json({
+            valid: true,
+            detail: {
+                event: data.event_name,
+                session: data.session_title,
+                waktu: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
+            }
+        });
+    } catch (err) {
+        console.error("Verifikasi QR gagal:", err);
+        return res.status(500).json({ valid: false, message: "Format kode tidak dikenali" });
+    }
+});
 
 module.exports = router;

@@ -66,7 +66,8 @@
                                                 data-image="{{ $registration['payment_proof'] }}">
                                                 <i class="fas fa-receipt pr-2"></i> Lihat Bukti Pembayaran
                                             </a>
-                                            <a href="#" class="btn btn-success mt-2">
+                                            <a href="#" class="btn btn-success mt-2 view-qrcode"
+                                                data-image="{{ $registration['qrcode'] }}">
                                                 <i class="fas fa-qrcode pr-2"></i> Tampilkan QR Code
                                             </a>
                                         @break
@@ -99,6 +100,28 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Modal QR Code -->
+                        <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog"
+                            aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 350px;">
+                                <!-- batasi max-width -->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="qrCodeModalLabel">QR Code Kehadiran Peserta</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img src="" id="qrCodeImage" class="img-fluid" alt="QR Code"
+                                            style="max-width: 100%; height: auto;">
+                                        <p class="mt-3 text-muted small">QR Code hanya dapat digunakan selama acara
+                                            berlangsung.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @include('member.registration.edit', ['registration' => $registration])
                     @endforeach
                 </div>
@@ -106,8 +129,8 @@
                 <!-- Jika kosong -->
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
                 <div class="text-center py-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" class="text-secondary mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" class="text-secondary mb-3">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M9.75 9.75h.008v.008H9.75V9.75zm4.5 0h.008v.008H14.25V9.75zM12 15.75c1.5 0 2.25-.75 2.25-.75s-.75-1.5-2.25-1.5-2.25 1.5-2.25 1.5.75.75 2.25.75zm0 6.75a9.75 9.75 0 100-19.5 9.75 9.75 0 000 19.5z" />
                     </svg>
@@ -151,5 +174,20 @@
             $('#paymentProofImage').attr('src', imageUrl);
             $('#paymentProofMemberModal').modal('show'); // ganti sesuai ID modal kamu
         });
+    </script>
+
+    <script>
+        // Untuk menampilkan QR code
+        $(document).on('click', '.view-qrcode', function(e) {
+            e.preventDefault();
+            var imageUrl = $(this).data('image');
+            $('#qrCodeImage').attr('src', imageUrl);
+            $('#qrCodeModal').modal('show');
+        });
+
+        // // Bersihkan src saat modal ditutup
+        // $('#qrCodeModal').on('hidden.bs.modal', function() {
+        //     $('#qrCodeImage').attr('src', '');
+        // });
     </script>
 @endsection

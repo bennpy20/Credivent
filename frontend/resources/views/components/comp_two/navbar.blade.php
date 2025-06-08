@@ -84,7 +84,8 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="#">Profil</a></li>
                                 <li><a class="dropdown-item" href="{{ route('committee.event.index') }}">Kelola event</a></li>
-                                <li><a class="dropdown-item" href="#">Scan kode</a></li>
+                                <li><a class="dropdown-item" href="{{ route('committee.scanqr.index') }}">Scan QR Code</a></li>
+                                <li><a class="dropdown-item" href="#">Upload Sertifikat</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>

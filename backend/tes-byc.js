@@ -20,3 +20,7 @@ const formatted = moment.tz(input, 'YYYY-MM-DD HH:mm', 'Asia/Jakarta').format('Y
 
 console.log('Input:', input);
 console.log('Formatted:', formatted);
+
+
+const now = new Date();
+console.log("Waktu sekarang: " + now)

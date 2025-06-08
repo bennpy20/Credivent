@@ -6,6 +6,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AdminFinanceTeamController;
 use App\Http\Controllers\AdminCommitteeController;
 use App\Http\Controllers\CommitteeEventController;
+use App\Http\Controllers\CommitteeScanQrController;
 use App\Http\Controllers\EventFlowController;
 use App\Http\Controllers\FinanceTeamRegistrationController;
 use App\Http\Controllers\MemberRegistrationEventController;
@@ -46,6 +47,10 @@ Route::prefix('committee')->name('committee.')->middleware('role:3')->group(func
 
     Route::resource('event', CommitteeEventController::class, [
         'parameters' => ['event' => 'id']
+    ]);
+
+    Route::resource('scanqr', CommitteeScanQrController::class, [
+        'parameters' => ['scanqr' => 'id']
     ]);
 });
 

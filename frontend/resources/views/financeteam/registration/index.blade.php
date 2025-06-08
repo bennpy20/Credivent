@@ -41,10 +41,11 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php $no = 1; @endphp
                                 @foreach ($registrations as $registration)
                                     @if ($registration['payment_status'] === 1)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $no++ }}</td>
                                             <td>{{ $registration['user']['name'] }}</td>
                                             {{-- <td>ayu@example.com</td> --}}
                                             <td>{{ $registration['event']['name'] }} (Sesi
@@ -136,10 +137,11 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php $no = 1; @endphp
                                 @foreach ($registrations as $registration)
                                     @if ($registration['payment_status'] != 1)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $no++ }}</td>
                                             <td>{{ $registration['user']['name'] }}</td>
                                             {{-- <td>ayu@example.com</td> --}}
                                             <td>{{ $registration['event']['name'] }} (Sesi

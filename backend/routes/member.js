@@ -16,6 +16,7 @@ const updateEventStatus = require('../utils/updateEventStatus');
 
 //// Route untuk Panitia (Committee) kelola event
 router.get('/member-event-index', async (req, res) => {
+    await updateEventStatus();
     const events = await Event.findAll({
         where: {
             event_status: [1, 2]
@@ -25,6 +26,7 @@ router.get('/member-event-index', async (req, res) => {
 });
 
 router.get('/member-event-show/:id', async (req, res) => {
+    await updateEventStatus();
     try {
         // 1. Cari Event berdasarkan ID
         const event = await Event.findByPk(req.params.id);
@@ -79,6 +81,7 @@ router.get('/member-event-show/:id', async (req, res) => {
 //// Mengurus registrasi event untuk member
 
 router.get('/member-registration-show/:id', async (req, res) => {
+    await updateEventStatus();
     const userId = req.query.id;
 
     try {
