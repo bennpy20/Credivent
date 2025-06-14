@@ -12,7 +12,7 @@ const Attendance = require('../models/Attendance');
 const generateRegistrationId = require('../utils/generateRegistrationId');
 const generateAttendanceId = require('../utils/generateAttendanceId');
 const updateEventStatus = require('../utils/updateEventStatus');
-// const { Op } = require('sequelize');
+const { Op } = require('sequelize');
 
 //// Route untuk Panitia (Committee) kelola event
 router.get('/member-event-index', async (req, res) => {
@@ -269,6 +269,48 @@ router.put('/member-registration-update/:id', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ status: 'error', message: 'Server error' });
+    }
+});
+
+//// Member melihat sertifikat
+router.get('/member-certificate-index', async (req, res) => {
+    const { user_id } = req.query;
+
+    try {
+        const registrations = await Registration.findAll({ where: { user_id } });
+        const regIds = registrations.map(r => r.id);
+
+        const attendances = await Attendance.findAll({
+            where: {
+                registration_id: regIds,
+                validity: 2,
+                certificate_link: { [Op.ne]: null }
+            }
+        });
+
+        const results = await Promise.all(attendances.map(async (att) => {
+            const reg = registrations.find(r => r.id === att.registration_id);
+            const session = await EventSession.findByPk(reg.event_session_id);
+            const event = await Event.findByPk(session.event_id);
+
+            return {
+                certificate_link: att.certificate_link,
+                session: {
+                    session: session.session,
+                    title: session.title,
+                    session_start: session.session_start,
+                    session_end: session.session_end
+                },
+                event: {
+                    name: event.name
+                }
+            };
+        }));
+
+        res.json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 

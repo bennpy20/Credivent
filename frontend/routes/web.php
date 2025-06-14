@@ -5,10 +5,12 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AdminFinanceTeamController;
 use App\Http\Controllers\AdminCommitteeController;
+use App\Http\Controllers\CommitteeCertificateController;
 use App\Http\Controllers\CommitteeEventController;
 use App\Http\Controllers\CommitteeScanQrController;
 use App\Http\Controllers\EventFlowController;
 use App\Http\Controllers\FinanceTeamRegistrationController;
+use App\Http\Controllers\MemberCertificateController;
 use App\Http\Controllers\MemberRegistrationEventController;
 use App\Http\Controllers\MemberScheduleController;
 
@@ -52,6 +54,10 @@ Route::prefix('committee')->name('committee.')->middleware('role:3')->group(func
     Route::resource('scanqr', CommitteeScanQrController::class, [
         'parameters' => ['scanqr' => 'id']
     ]);
+
+    Route::resource('certificate', CommitteeCertificateController::class, [
+        'parameters' => ['certificate' => 'id']
+    ]);
 });
 
 Route::prefix('financeteam')->name('financeteam.')->middleware('role:4')->group(function () {
@@ -76,6 +82,10 @@ Route::prefix('member')->name('member.')->group(function () {
 
     Route::resource('registration', MemberRegistrationEventController::class, [
         'parameters' => ['registration' => 'id']
+    ])->middleware('role:2');
+
+    Route::resource('certificate', MemberCertificateController::class, [
+        'parameters' => ['certificate' => 'id']
     ])->middleware('role:2');
 });
 

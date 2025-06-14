@@ -46,7 +46,7 @@ router.get('/financeteam-registration-index', async (req, res) => {
 
         return res.json(filteredResults);
     } catch (error) {
-        console.error('Error fetching registration payments:', error);
+        // console.error('Error fetching registration payments:', error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 });

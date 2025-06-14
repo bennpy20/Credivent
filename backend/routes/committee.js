@@ -8,6 +8,7 @@ const EventSession = require('../models/EventSession');
 const Speaker = require('../models/Speaker');
 const Registration = require('../models/Registration');
 const Attendance = require('../models/Attendance');
+const User = require('../models/User');
 const generateEventId = require('../utils/generateEventId');
 const generateEventSessionId = require('../utils/generateEventSessionId');
 const generateSpeakerId = require('../utils/generateSpeakerId');
@@ -69,8 +70,11 @@ router.post('/committee-event-store', async (req, res) => {
 
             const newEventSessionId = `ESE-${(baseNumber + i).toString().padStart(3, '0')}`;
 
-            const formattedStartEvent = moment.tz(session.session_start, 'YYYY-MM-DD HH:mm', 'Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
-            const formattedEndEvent = moment.tz(session.session_end, 'YYYY-MM-DD HH:mm', 'Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+            const formattedStartEvent = new Date(session.session_start);
+            formattedStartEvent.setHours(formattedStartEvent.getHours() + 7);
+
+            const formattedEndEvent = new Date(session.session_end);
+            formattedEndEvent.setHours(formattedEndEvent.getHours() + 7);
 
 
             const newSession = await EventSession.create({
@@ -165,6 +169,77 @@ router.post('/committee-scanqr-store', async (req, res) => {
     } catch (err) {
         console.error("Verifikasi QR gagal:", err);
         return res.status(500).json({ valid: false, message: "Format kode tidak dikenali" });
+    }
+});
+
+
+//// Panitia upload sertifikat
+router.get('/committee-certificate-index', async (req, res) => {
+    try {
+        const now = new Date();
+        const attendances = await Attendance.findAll({
+            where: { validity: 2 }
+        });
+
+        const results = await Promise.all(attendances.map(async (att) => {
+            const registration = await Registration.findByPk(att.registration_id);
+            if (!registration) return null;
+
+            const user = await User.findByPk(registration.user_id);
+            const session = await EventSession.findByPk(registration.event_session_id);
+            if (!user || !session) return null;
+
+            // Pastikan hanya sesi yang sudah selesai
+            const sessionEnd = new Date(session.session_end);
+            if (sessionEnd >= now) return null;
+
+            const event = await Event.findByPk(session.event_id);
+            if (!event) return null;
+
+            return {
+                attendance_id: att.id,
+                user: {
+                    name: user.name,
+                    email: user.email
+                },
+                session: {
+                    session: session.session,
+                    title: session.title,
+                    session_start: session.session_start,
+                    session_end: session.session_end
+                },
+                event: {
+                    name: event.name
+                },
+                certificate_link: att.certificate_link
+            };
+        }));
+
+        const filteredResults = results.filter(item => item !== null);
+        res.json(filteredResults);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
+router.put('/committee-certificate-update/:id', async (req, res) => {
+    const { certificate_link } = req.body;
+
+    try {
+        const attendance = await Attendance.findByPk(req.params.id);
+        if (!attendance) {
+            return res.status(404).json({ message: 'Data kehadiran tidak ditemukan' });
+        }
+
+        attendance.certificate_link = certificate_link;
+        await attendance.save();
+
+        res.json({ status: 'success', message: 'Sertifikat berhasil diupload' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', message: 'Server error' });
     }
 });
 

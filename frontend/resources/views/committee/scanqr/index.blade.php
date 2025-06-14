@@ -21,7 +21,7 @@
     </section>
 
     <section class="ftco-section bg-light">
-            <div class="container py-4" style="max-width: 500px;">
+        <div class="container py-4" style="max-width: 500px;">
             <div class="card shadow">
                 <div class="card-header bg-primary d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 text-white">Scan QR Code Peserta</h5>
@@ -73,7 +73,8 @@
                     Waktu: ${data.detail.waktu}
                 </div>`;
             } else {
-                resultBox.innerHTML = `<div class="alert alert-danger">Tidak valid: ${data.message || 'Terjadi kesalahan saat verifikasi'}</div>`;
+                resultBox.innerHTML =
+                    `<div class="alert alert-danger">Tidak valid: ${data.message || 'Terjadi kesalahan saat verifikasi'}</div>`;
             }
 
             // Mulai ulang scan setelah 3,5 detik
@@ -90,7 +91,10 @@
                     facingMode: "environment"
                 }, {
                     fps: 10,
-                    qrbox: { width: 300, height: 300 },
+                    qrbox: {
+                        width: 300,
+                        height: 300
+                    },
                     aspectRatio: 1.0
                 }, onScanSuccess)
                 .then(() => {
