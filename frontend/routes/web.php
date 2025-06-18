@@ -13,6 +13,7 @@ use App\Http\Controllers\FinanceTeamRegistrationController;
 use App\Http\Controllers\MemberCertificateController;
 use App\Http\Controllers\MemberRegistrationEventController;
 use App\Http\Controllers\MemberScheduleController;
+use App\Http\Controllers\MemberSpeakerController;
 
 Route::get('/', function () {
     return view('member.index');
@@ -78,6 +79,10 @@ Route::prefix('member')->name('member.')->group(function () {
 
     Route::resource('schedule', MemberScheduleController::class, [
         'parameters' => ['schedule' => 'id']
+    ]);
+
+    Route::resource('speaker', MemberSpeakerController::class, [
+        'parameters' => ['speaker' => 'id']
     ]);
 
     Route::resource('registration', MemberRegistrationEventController::class, [

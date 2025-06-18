@@ -22,5 +22,5 @@ console.log('Input:', input);
 console.log('Formatted:', formatted);
 
 
-const now = new Date();
-console.log("Waktu sekarang: " + now)
+const nowWIB = new Date(new Date().getTime() + (7 * 60 * 60 * 1000))
+console.log(nowWIB)

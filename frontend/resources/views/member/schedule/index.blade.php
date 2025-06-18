@@ -5,14 +5,14 @@
 @endsection
 
 @section('content')
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('../memberast/images/bg_2.jpg');"
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('../memberast/images/member_schedule.png');"
         data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <h1 class="mb-3 bread">Jadwal Event</h1>
-                    <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i
+                    <p class="breadcrumbs"><span class="mr-2"><a href="{{ route('member.index') }}">Home <i
                                     class="ion-ios-arrow-forward"></i></a></span> <span>Jadwal <i
                                 class="ion-ios-arrow-forward"></i></span></p>
                 </div>
@@ -41,18 +41,34 @@
                                     <p>Biaya Tiket: Rp
                                         {{ number_format($event['transaction_fee'], 0, ',', '.') }}</p>
 
-                                    <a href="{{ route('member.schedule.show', $event['id']) }}" class="btn btn-primary mt-2">
+                                    <a href="{{ route('member.schedule.show', $event['id']) }}"
+                                        class="btn btn-primary mt-2">
                                         Detail event
                                     </a>
-                                    @if (session()->has('user') && session('user.role') == 2)
-                                        <a href="{{ route('member.registration.show', $event['id']) }}" class="btn btn-primary mt-2">
-                                            Registrasi
-                                        </a>
+                                    @if (session()->has('user'))
+                                        @if (session('user.role') == 2)
+                                            {{-- Member: tombol registrasi aktif --}}
+                                            <a href="{{ route('member.registration.show', $event['id']) }}"
+                                                class="btn btn-primary mt-2">
+                                                Registrasi
+                                            </a>
+                                        @elseif (session('user.role') == 1 || session('user.role') == 3 || session('user.role') == 4)
+                                            {{-- Panitia / Tim Keuangan: munculkan alert --}}
+                                            <button class="btn btn-secondary mt-2"
+                                                onclick="Swal.fire('Oops!', 'Anda bukan member, tidak bisa registrasi event', 'warning')">
+                                                Registrasi
+                                            </button>
+                                        @else
+                                            <a href="{{ route('login') }}" class="btn btn-primary mt-2">
+                                                Registrasi
+                                            </a>
+                                        @endif
                                     @else
                                         <a href="{{ route('login') }}" class="btn btn-primary mt-2">
                                             Registrasi
                                         </a>
                                     @endif
+
                                 </div>
                             </div>
                         </div>
@@ -68,7 +84,7 @@
                             d="M9.75 9.75h.008v.008H9.75V9.75zm4.5 0h.008v.008H14.25V9.75zM12 15.75c1.5 0 2.25-.75 2.25-.75s-.75-1.5-2.25-1.5-2.25 1.5-2.25 1.5.75.75 2.25.75zm0 6.75a9.75 9.75 0 100-19.5 9.75 9.75 0 000 19.5z" />
                     </svg>
                     <h4 class="text-muted">Data tidak ditemukan</h4>
-                    <p class="text-secondary">Silakan tambahkan data event terlebih dahulu</p>
+                    <p class="text-secondary">Tidak ada event yang sedang berlangsung atau mendatang..</p>
                 </div>
                 <hr class="mb-4" style="border-top: 2px solid #dee2e6;">
             @endif

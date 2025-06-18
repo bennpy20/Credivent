@@ -314,4 +314,16 @@ router.get('/member-certificate-index', async (req, res) => {
     }
 });
 
+router.get('/member-speaker-index', async (req, res) => {
+    try {
+        const speakers = await Speaker.findAll({
+            order: [['name', 'ASC']]
+        });
+        res.status(200).json(speakers);
+    } catch (error) {
+        console.error("Gagal mengambil data pembicara:", error);
+        res.status(500).json({ error: 'Gagal mengambil data pembicara' });
+    }
+});
+
 module.exports = router;

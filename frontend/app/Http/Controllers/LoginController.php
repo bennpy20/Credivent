@@ -30,8 +30,10 @@ class LoginController extends Controller
 
             // Redirect langsung
             return redirect()->route('member.index');
+        } elseif ($response->status() === 403) {
+            $message = $response->json()['message'] ?? 'Akun tidak aktif';
+            return back()->with('acc_inactive', $message)->withInput();
         } else {
-            // dd($response->status(), $response->body());
             return back()->withErrors(['login' => 'Email atau password salah'])->withInput();
         }
     }

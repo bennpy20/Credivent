@@ -20,7 +20,7 @@
             <ul class="navbar-nav ml-auto align-items-center">
                 <li class="nav-item {{ Route::is('member.index') ? 'active' : '' }}"><a href="{{ route('member.index') }}" class="nav-link">Home</a></li>
                 <li class="nav-item {{ Route::is('member.schedule.index') ? 'active' : '' }}" ><a href="{{ route('member.schedule.index') }}" class="nav-link">Jadwal</a></li>
-                <li class="nav-item"><a href="schedule.html" class="nav-link">Pembicara</a></li>
+                <li class="nav-item {{ Route::is('member.speaker.index') ? 'active' : '' }}" ><a href="{{ route('member.speaker.index') }}" class="nav-link">Pembicara</a></li>
                 <li class="nav-item"><a href="contact.html" class="nav-link">Tentang Kami</a></li>
 
                 @if (session()->has('user') && session('user.role') == 1)
@@ -39,7 +39,7 @@
                                 aria-expanded="false"
                                 style="width: 40px; height: 40px; padding: 0; border-radius: 50%; overflow: hidden;">
                                 <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
-                                    <img src="{{ Auth::user()->profile_picture ?? asset('account-icon-default.jpg') }}"
+                                    <img src="{{ asset('account-icon-default.jpg') }}"
                                         alt="Profile"
                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 </div>
@@ -47,7 +47,7 @@
 
                             <!-- Menu dropdown -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Profil</a></li>
+                                <li><p class="dropdown-item"><b><u>{{ session('user.name') }}</u></b></p></li>
                                 <li><a class="dropdown-item" href="{{ route('member.registration.index') }}">Event Terdaftar</a></li>
                                 <li><a class="dropdown-item" href="{{ route('member.certificate.index') }}">Lihat Sertifikat</a></li>
                                 <li>
@@ -75,7 +75,7 @@
                                 aria-expanded="false"
                                 style="width: 40px; height: 40px; padding: 0; border-radius: 50%; overflow: hidden;">
                                 <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
-                                    <img src="{{ Auth::user()->profile_picture ?? asset('account-icon-default.jpg') }}"
+                                    <img src="{{ asset('account-icon-default.jpg') }}"
                                         alt="Profile"
                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 </div>
@@ -83,7 +83,7 @@
 
                             <!-- Menu dropdown -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Profil</a></li>
+                                <li><p class="dropdown-item"><b><u>{{ session('user.name') }}</u></b></p></li>
                                 <li><a class="dropdown-item" href="{{ route('committee.event.index') }}">Kelola event</a></li>
                                 <li><a class="dropdown-item" href="{{ route('committee.scanqr.index') }}">Scan QR Code</a></li>
                                 <li><a class="dropdown-item" href="{{ route('committee.certificate.index') }}">Upload Sertifikat</a></li>
@@ -112,7 +112,7 @@
                                 aria-expanded="false"
                                 style="width: 40px; height: 40px; padding: 0; border-radius: 50%; overflow: hidden;">
                                 <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
-                                    <img src="{{ Auth::user()->profile_picture ?? asset('account-icon-default.jpg') }}"
+                                    <img src="{{ asset('account-icon-default.jpg') }}"
                                         alt="Profile"
                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 </div>
@@ -120,7 +120,7 @@
 
                             <!-- Menu dropdown -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Profil</a></li>
+                                <li><p class="dropdown-item"><b><u>{{ session('user.name') }}</u></b></p></li>
                                 <li><a class="dropdown-item" href="{{ route('financeteam.registration.index') }}">Kelola Keuangan</a></li>
                                 <li>
                                     <hr class="dropdown-divider">

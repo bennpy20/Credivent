@@ -12,9 +12,9 @@
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <h1 class="mb-3 bread">{{ $event['name'] }}</h1>
-                    <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i
+                    <p class="breadcrumbs"><span class="mr-2"><a href="{{ route('member.index') }}">Home <i
                                     class="ion-ios-arrow-forward"></i></a></span>
-                        <span class="mr-2"><a href="index.html">Registrasi <i
+                        <span class="mr-2"><a href="{{ route('member.schedule.index') }}">Registrasi <i
                                     class="ion-ios-arrow-forward"></i></a></span>
                         <span>{{ $event['name'] }} <i class="ion-ios-arrow-forward"></i></span>
                     </p>

@@ -63,7 +63,7 @@ router.post('/register', async (req, res) => {
 // Route untuk login
 router.post('/login', async (req, res) => {
     // console.log("Login request body:", req.body);
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
         const user = await User.findOne({ where: { email } });
@@ -77,8 +77,12 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ status: 'fail', message: 'Email atau password salah' });
         }
 
+        if (user.acc_status === 2) {
+            return res.status(403).json({ status: 'fail', message: 'Akun Anda telah dinonaktifkan, mohon hubungi admin' });
+        }
+
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.id, name: user.name, email: user.email, role: user.role },
             JWT_SECRET,
             { expiresIn: '1h' }
         );
@@ -88,6 +92,7 @@ router.post('/login', async (req, res) => {
             token,
             user: {
                 id: user.id,
+                name: user.name,
                 email: user.email,
                 role: user.role
             }

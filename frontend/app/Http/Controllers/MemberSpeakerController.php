@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class CommitteeScanQrController extends Controller
+class MemberSpeakerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +13,14 @@ class CommitteeScanQrController extends Controller
 
     public function index()
     {
-        return view('committee.scanqr.index');
+        $response = Http::get('http://localhost:3000/api/member/member-speaker-index');
+
+        if ($response->successful()) {
+            $speakers = $response->json();
+            return view('member.speaker.index', compact('speakers'));
+        } else {
+            return back()->withErrors(['error' => 'Gagal memuat data pembicara']);
+        }
     }
 
 
@@ -30,21 +37,7 @@ class CommitteeScanQrController extends Controller
      */
     public function store(Request $request)
     {
-        $qrData = $request->input('qr_data');
-        $user = session('user');
-
-        try {
-            $response = Http::post('http://localhost:3000/api/committee/committee-scanqr-store', [
-                'qr_data' => $qrData,
-                'user_id' => $user['id']
-            ]);
-
-            $data = $response->json(); // Ambil isi JSON apa pun statusnya
-
-            return response()->json($data); // Return langsung, tidak peduli status HTTP-nya
-        } catch (\Exception $e) {
-            return response()->json(['valid' => false, 'message' => 'Terjadi kesalahan'], 500);
-        }
+        //
     }
 
     /**

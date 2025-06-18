@@ -7495,19 +7495,14 @@ h1, h2, h3, h4, h5,
     right: 0;
     bottom: 0;
     content: '';
-    opacity: .08;
-    background: #000000;
-    background: #6b75ff;
-    background: -moz-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: -webkit-gradient(left bottom, right top, color-stop(0%, #6b75ff), color-stop(0%, #6b75ff), color-stop(100%, #59b7ff));
-    background: -webkit-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: -o-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: -ms-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6b75ff', endColorstr='#59b7ff', GradientType=1 ); }
+    opacity: 0.9; /* Atur transparansi overlay */
+    background: rgba(255, 255, 255, 0.8); /* Warna putih dengan transparansi */
+    /* Gradient yang lebih terang */
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9)); }
   .hero-wrap.hero-wrap-2 .overlay {
     width: 100%;
-    opacity: .05; }
+    opacity: 0.9; /* Atur transparansi overlay */
+    background: rgba(255, 255, 255, 0.9); /* White transparent overlay */ }
 
 .slider-text h1 {
   font-size: 64px;
@@ -7811,25 +7806,10 @@ h1, h2, h3, h4, h5,
 .speaker .text {
   position: relative; }
   .speaker .text:after {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    content: '';
-    width: 80%;
-    height: 1px;
-    margin: 0 auto;
-    background: #6b75ff;
-    background: -moz-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: -webkit-gradient(left bottom, right top, color-stop(0%, #6b75ff), color-stop(0%, #6b75ff), color-stop(100%, #59b7ff));
-    background: -webkit-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: -o-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: -ms-linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    background: linear-gradient(45deg, #6b75ff 0%, #6b75ff 0%, #59b7ff 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6b75ff', endColorstr='#59b7ff', GradientType=1 ); }
+    display: none; }
 
 .speaker h3 {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
   margin-bottom: 0; }
 

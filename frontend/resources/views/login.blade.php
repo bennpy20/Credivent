@@ -54,6 +54,18 @@
                             </button>
                         </form>
 
+                        @if (session('acc_inactive'))
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                            <script>
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Login Gagal',
+                                    text: "{{ session('acc_inactive') }}",
+                                    // confirmButtonColor: '#3085d6'
+                                });
+                            </script>
+                        @endif
+
                         {{-- <div class="mt-4">
                             <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
                                 href="./forgot-password.html">

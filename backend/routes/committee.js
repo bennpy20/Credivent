@@ -117,7 +117,7 @@ router.post('/committee-event-store', async (req, res) => {
 
 // Scan untuk QRCode
 router.post('/committee-scanqr-store', async (req, res) => {
-    const { qr_data } = req.body;
+    const { qr_data, user_id } = req.body;
 
     try {
         const data = JSON.parse(qr_data); // Parsing JSON dari QR
@@ -129,6 +129,12 @@ router.post('/committee-scanqr-store', async (req, res) => {
         }
 
         const session = await EventSession.findByPk(data.session_id);
+
+        const event = await Event.findByPk(session.event_id);
+
+        if (!event || event.user_id !== user_id) {
+            return res.status(403).json({ valid: false, message: "Event ini bukanlah event yang Anda buat, tidak bisa scan" });
+        }
         const nowUTC = new Date();
         
         // Geser UTC ke WIB (Asia/Jakarta = UTC+7)
