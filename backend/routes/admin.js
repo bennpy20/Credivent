@@ -164,4 +164,24 @@ router.delete('/admin-financeteam-destroy/:id', async (req, res) => {
     }
 });
 
+
+//// Dashboard Admin
+router.get('/admin-dashboard-index', async (req, res) => {
+    try {
+        const panitiaCount = await User.count({ where: { role: 3 } });
+        const keuanganCount = await User.count({ where: { role: 4 } });
+
+        const users = await User.findAll({ where: { role: [3, 4] } } );
+
+        res.json({
+            panitia: panitiaCount,
+            keuangan: keuanganCount,
+            users: users
+        });
+    } catch (error) {
+        console.error('Error di dashboard admin:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 module.exports = router;

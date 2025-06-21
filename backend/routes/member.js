@@ -401,4 +401,51 @@ router.get('/member-speaker-index', async (req, res) => {
     }
 });
 
+//// Dashboard member
+router.get('/member-dashboard-index', async (req, res) => {
+    try {
+        await updateEventStatus();
+
+        // Ambil semua event status 1 atau 2
+        const events = await Event.findAll({ where: { event_status: [1, 2] } });
+
+        const eventResults = await Promise.all(events.map(async (event) => {
+            const sessions = await EventSession.findAll({ where: { event_id: event.id } });
+
+            let totalParticipants = 0;
+            for (const session of sessions) {
+                const registrations = await Registration.count({ where: { event_session_id: session.id } });
+                totalParticipants += registrations;
+            }
+
+            return {
+                id: event.id,
+                name: event.name,
+                location: event.location,
+                poster_link: event.poster_link,
+                transaction_fee: event.transaction_fee,
+                event_status: event.event_status,
+                start_date: event.start_date,
+                end_date: event.end_date,
+                max_participants: event.max_participants,
+                registered_participants: totalParticipants,
+                available_capacity: event.max_participants - totalParticipants
+            };
+        }));
+
+        const speakers = await Speaker.findAll({
+            order: [['name', 'ASC']]
+        });
+
+        return res.status(200).json({
+            events: eventResults,
+            speakers
+        });
+    } catch (error) {
+        console.error("Gagal memuat data dashboard member:", error);
+        res.status(500).json({ error: 'Gagal memuat data dashboard member' });
+    }
+});
+
+
 module.exports = router;

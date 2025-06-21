@@ -4,35 +4,60 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
-class AdminDashboardController extends Controller
+class MemberDashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $response = Http::get('http://localhost:3000/api/admin/admin-dashboard-index');
+        $response = Http::get('http://localhost:3000/api/member/member-dashboard-index');
 
         if ($response->successful()) {
             $data = $response->json();
 
-            $panitiaCount = $data['panitia'];
-            $keuanganCount = $data['keuangan'];
+            $events = array_map(function ($event) {
+                $start = Carbon::parse($event['start_date'])->locale('id');
+                $end = Carbon::parse($event['end_date'])->locale('id');
 
-            // Batasi hanya 5 user pertama
-            $users = array_slice($data['users'], 0, 5);
+                if ($start->isSameDay($end)) {
+                    $event['date_display'] = $start->translatedFormat('d F Y');
+                } elseif ($start->format('Y') === $end->format('Y')) {
+                    if ($start->format('F') === $end->format('F')) {
+                        $event['date_display'] = $start->format('d') . '-' . $end->translatedFormat('d F Y');
+                    } else {
+                        $event['date_display'] = $start->translatedFormat('d F') . ' - ' . $end->translatedFormat('d F Y');
+                    }
+                } else {
+                    $event['date_display'] = $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y');
+                }
 
-            // Ubah status akun 1 → Aktif, 2 → Nonaktif
-            foreach ($users as &$user) {
-                $user['status_label'] = $user['acc_status'] == 1 ? 'Aktif' : 'Nonaktif';
-                $user['status_color'] = $user['acc_status'] == 1 ? 'green' : 'red';
-            }
+                // Mapping status event
+                switch ($event['event_status']) {
+                    case 1:
+                        $event['event_status_text'] = 'Mendatang';
+                        break;
+                    case 2:
+                        $event['event_status_text'] = 'Berlangsung';
+                        break;
+                    case 3:
+                        $event['event_status_text'] = 'Selesai';
+                        break;
+                    default:
+                        $event['event_status_text'] = 'Tidak diketahui';
+                }
 
-            return view('admin.index', compact('panitiaCount', 'keuanganCount', 'users'));
-        } else {
-            return back()->withErrors(['error' => 'Gagal mengambil data user']);
+                return $event;
+            }, $data['events']);
+
+            $speakers = $data['speakers'];
+
+            return view('member.index', compact('events', 'speakers'));
         }
+
+        return back()->withErrors(['error' => 'Gagal mengambil data dashboard']);
     }
 
     /**

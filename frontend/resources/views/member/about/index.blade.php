@@ -63,28 +63,6 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- <div class="col-md-6 justify-content-center counter-wrap ftco-animate">
-                            <div class="block-18 text-center py-4 bg-light mb-4">
-                                <div class="text">
-                                    <div class="icon d-flex justify-content-center align-items-center">
-                                        <span class="flaticon-handshake"></span>
-                                    </div>
-                                    <strong class="number" data-number="100">0</strong>
-                                    <span>Sponsor</span>
-                                </div>
-                            </div>
-                        </div> --}}
-                        {{-- <div class="col-md-6 justify-content-center counter-wrap ftco-animate">
-                            <div class="block-18 text-center py-4 bg-light mb-4">
-                                <div class="text">
-                                    <div class="icon d-flex justify-content-center align-items-center">
-                                        <span class="flaticon-chair"></span>
-                                    </div>
-                                    <strong class="number" data-number="2500">0</strong>
-                                    <span>Total Seats</span>
-                                </div>
-                            </div>
-                        </div> --}}
                         <div class="col-md-6 justify-content-center counter-wrap ftco-animate">
                             <div class="block-18 text-center py-4 bg-light mb-4">
                                 <div class="text">

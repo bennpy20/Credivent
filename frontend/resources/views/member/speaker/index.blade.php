@@ -32,7 +32,7 @@
                         <div class="col-md-4 d-flex flex-column align-items-center speaker mb-4">
                             <div class="rounded overflow-hidden d-flex justify-content-center align-items-center"
                                 style="width: 200px; height: 200px; background-color: #f8f9fa; border: 1px solid #dee2e6;">
-                                <img src="{{ $speaker['speaker_image'] }}" class="img-fluid" alt="Foto Speaker"
+                                <img src="{{ $speaker['speaker_image'] }}" class="img-fluid" alt="Foto Pembicara"
                                     style="width: 100%; height: 100%; object-fit: cover; border:none">
                             </div>
                             <div class="text text-center pt-3">

@@ -13,6 +13,7 @@ use App\Http\Controllers\EventFlowController;
 use App\Http\Controllers\FinanceTeamRegistrationController;
 use App\Http\Controllers\MemberAboutController;
 use App\Http\Controllers\MemberCertificateController;
+use App\Http\Controllers\MemberDashboardController;
 use App\Http\Controllers\MemberRegistrationEventController;
 use App\Http\Controllers\MemberScheduleController;
 use App\Http\Controllers\MemberSpeakerController;
@@ -72,9 +73,7 @@ Route::prefix('financeteam')->name('financeteam.')->middleware('role:4')->group(
 
 
 Route::prefix('member')->name('member.')->group(function () {
-    Route::get('/', function () {
-        return view('/member/index');
-    })->name('index');
+    Route::get('/', [MemberDashboardController::class, 'index'])->name('index');
 
     Route::resource('schedule', MemberScheduleController::class, [
         'parameters' => ['schedule' => 'id']
@@ -96,9 +95,3 @@ Route::prefix('member')->name('member.')->group(function () {
         'parameters' => ['certificate' => 'id']
     ])->middleware('role:2');
 });
-
-
-// Tdk terpakai
-Route::get('/index', function () {
-    return view('index'); // pastikan ada file resources/views/index.blade.php
-})->name('index');
