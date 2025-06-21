@@ -54,7 +54,7 @@ class MemberRegistrationEventController extends Controller
                 } else {
                     $item['registration_status'] = 'gagal';
                 }
-                
+
                 return $item;
             }, $registrations);
 
@@ -181,6 +181,12 @@ class MemberRegistrationEventController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $response = Http::delete("http://localhost:3000/api/member/member-registration-destroy/{$id}");
+
+        if ($response->successful()) {
+            return back()->with('success', 'Pendaftaran event berhasil dibatalkan');
+        }
+
+        return back()->withErrors(['error' => 'Gagal membatalkan pendaftaran']);
     }
 }

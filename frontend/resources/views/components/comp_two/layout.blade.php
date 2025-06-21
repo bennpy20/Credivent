@@ -165,6 +165,29 @@
     </script>
 
     <script>
+        function confirmCancel(id) {
+            Swal.fire({
+                title: "Apakah kamu yakin?",
+                text: "Pendaftaran kamu akan dibatalkan",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#c0c0c0",
+                confirmButtonText: "Ya, batalkan",
+                cancelButtonText: "Batal",
+                customClass: {
+                    confirmButton: 'focus:outline-none',
+                    cancelButton: 'focus:outline-none'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${id}`).submit();
+                }
+            });
+        }
+    </script>
+
+    <script>
         function confirmApproval(id) {
             Swal.fire({
                 title: 'Setujui pembayaran?',

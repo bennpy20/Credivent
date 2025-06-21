@@ -49,6 +49,7 @@
                                         {{ number_format($event['max_participants'], 0, ',', '.') }}</p>
                                     <p>Biaya Tiket: Rp
                                         {{ number_format($event['transaction_fee'], 0, ',', '.') }}</p>
+                                    <p>Status Event: {{ $event['event_status_text'] }}</p>
                                     <button type="button" class="btn btn-primary" data-toggle="modal"
                                         data-target="#modalUpdateEvent{{ $event['id'] }}">
                                         Edit Event

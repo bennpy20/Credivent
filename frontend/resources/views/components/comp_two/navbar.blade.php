@@ -21,7 +21,7 @@
                 <li class="nav-item {{ Route::is('member.index') ? 'active' : '' }}"><a href="{{ route('member.index') }}" class="nav-link">Home</a></li>
                 <li class="nav-item {{ Route::is('member.schedule.index') ? 'active' : '' }}" ><a href="{{ route('member.schedule.index') }}" class="nav-link">Jadwal</a></li>
                 <li class="nav-item {{ Route::is('member.speaker.index') ? 'active' : '' }}" ><a href="{{ route('member.speaker.index') }}" class="nav-link">Pembicara</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Tentang Kami</a></li>
+                <li class="nav-item {{ Route::is('member.about.index') ? 'active' : '' }}"><a href="{{ route('member.about.index') }}" class="nav-link">Tentang Kami</a></li>
 
                 @if (session()->has('user') && session('user.role') == 1)
                     <!-- Tampilkan login jika belum login -->

@@ -36,6 +36,21 @@ class MemberScheduleController extends Controller
                     }
                 }
 
+                // Mapping status
+                switch ($event['event_status']) {
+                    case 1:
+                        $event['event_status_text'] = 'Mendatang';
+                        break;
+                    case 2:
+                        $event['event_status_text'] = 'Berlangsung';
+                        break;
+                    case 3:
+                        $event['event_status_text'] = 'Selesai';
+                        break;
+                    default:
+                        $event['event_status_text'] = 'Tidak diketahui';
+                }
+
                 return $event;
             }, $events);
 

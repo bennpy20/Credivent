@@ -6,11 +6,6 @@
                     <h2 class="ftco-heading-2">Credivent</h2>
                     <p>Semua Event Hebat Dimulai dari Credivent.</p>
                     <p>Credivent adalah platform event kampus yang memudahkan pengelolaan acara. Dari organisasi hingga partisipasi — semua jadi lebih praktis dan terpusat.</p>
-                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
-                        <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-                        <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-                        <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-                    </ul>
                 </div>
             </div>
             <div class="col-md">
@@ -21,11 +16,11 @@
                             <li><span class="icon icon-map-marker"></span><span class="text">
                                 Jl. Prof. drg. Soeria Soemantri No. 65, Sukawarna, Kec. Sukajadi, Kota Bandung, Jawa Barat, 40164</span>
                             </li>
-                            <li><a href="#"><span class="icon icon-phone"></span><span class="text">
+                            <li><span class="icon icon-phone"></span><span class="text">
                                 +62 812-3456-7890
                             </li>
-                            <li><a href="#"><span class="icon icon-envelope"></span><span
-                                        class="text">eben@gmail.com</span></a></li>
+                            <li><span class="icon icon-envelope"></span><span class="text">
+                                customer_service@credivent.com</span></a></li>
                         </ul>
                     </div>
                 </div>

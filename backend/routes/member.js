@@ -16,14 +16,52 @@ const { Op } = require('sequelize');
 
 //// Route untuk Panitia (Committee) kelola event
 router.get('/member-event-index', async (req, res) => {
-    await updateEventStatus();
-    const events = await Event.findAll({
-        where: {
-            event_status: [1, 2]
-        }
-    });
-    res.json(events);
+    try {
+        await updateEventStatus();
+
+        // Ambil semua event dengan status 1 atau 2
+        const events = await Event.findAll({
+            where: { event_status: [1, 2] }
+        });
+
+        // Untuk setiap event, hitung total peserta berdasarkan session -> registration
+        const results = await Promise.all(events.map(async (event) => {
+            // Cari semua session di event ini
+            const sessions = await EventSession.findAll({
+                where: { event_id: event.id }
+            });
+
+            let totalParticipants = 0;
+
+            // Untuk setiap session, hitung jumlah registrasi
+            for (const session of sessions) {
+                const registrations = await Registration.findAll({
+                    where: { event_session_id: session.id }
+                });
+                totalParticipants += registrations.length;
+            }
+
+            return {
+                id: event.id,
+                name: event.name,
+                location: event.location,
+                poster_link: event.poster_link,
+                transaction_fee: event.transaction_fee,
+                event_status: event.event_status,
+                start_date: event.start_date,
+                end_date: event.end_date,
+                max_participants: event.max_participants,
+                registered_participants: totalParticipants,
+                available_capacity: event.max_participants - totalParticipants
+            };
+        }));
+        res.json(results);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
+
 
 router.get('/member-event-show/:id', async (req, res) => {
     await updateEventStatus();
@@ -74,6 +112,43 @@ router.get('/member-event-show/:id', async (req, res) => {
     } catch (error) {
         console.error('Error fetching event data:', error);
         res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+    }
+});
+
+// Member batalkan event sblm bayar
+router.delete('/member-registration-destroy/:id', async (req, res) => {
+    const registrationId = req.params.id;
+
+    try {
+        // Cari registrasi
+        const registration = await Registration.findByPk(registrationId);
+
+        if (!registration) {
+            return res.status(404).json({ error: 'Pendaftaran tidak ditemukan' });
+        }
+
+        // Jika sudah bayar, tidak bisa dibatalkan
+        if (registration.payment_proof) {
+            return res.status(400).json({ error: 'Tidak dapat membatalkan, pembayaran sudah dilakukan' });
+        }
+
+        // Cek apakah ada attendance terkait
+        const attendance = await Attendance.findOne({
+            where: { registration_id: registrationId }
+        });
+
+        // Hapus attendance terlebih dahulu jika ada
+        if (attendance) {
+            await attendance.destroy();
+        }
+
+        // Hapus registrasi
+        await registration.destroy();
+
+        return res.json({ message: 'Pendaftaran berhasil dibatalkan' });
+    } catch (error) {
+        console.error('Error cancel registration:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 

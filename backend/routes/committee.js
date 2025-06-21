@@ -17,8 +17,19 @@ const updateEventStatus = require('../utils/updateEventStatus');
 
 //// Route untuk Panitia (Committee) kelola event
 router.get('/committee-event-index', async (req, res) => {
+    const userId = req.query.user_id;
+
+    if (!userId) {
+        return res.status(400).json({ error: 'user_id is required' });
+    }
+
     await updateEventStatus();
-    const events = await Event.findAll();
+    
+    const events = await Event.findAll({
+        where: {
+            user_id: userId
+        }
+    });
     res.json(events);
 });
 

@@ -5,8 +5,8 @@
 @endsection
 
 @section('content')
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('../memberast/images/member_schedule.png');"
-        data-stellar-background-ratio="0.5">
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+        style="background-image: url('../memberast/images/member_schedule.png');" data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
@@ -36,22 +36,29 @@
                                     </div>
                                     <h3 class="heading mt-2"><strong>{{ $event['name'] }}</strong></h3>
                                     <p>Lokasi: {{ $event['location'] }}</p>
-                                    <p>Kapasitas Peserta:
-                                        {{ number_format($event['max_participants'], 0, ',', '.') }}</p>
+                                    {{-- <p>Kapasitas Peserta: {{ $event['max_participants'] }}</p> --}}
+                                    <p>Kapasitas Tersedia: {{ $event['available_capacity'] }}</p>
                                     <p>Biaya Tiket: Rp
                                         {{ number_format($event['transaction_fee'], 0, ',', '.') }}</p>
-
+                                    <p>Status Event: {{ $event['event_status_text'] }}</p>
                                     <a href="{{ route('member.schedule.show', $event['id']) }}"
                                         class="btn btn-primary mt-2">
                                         Detail event
                                     </a>
                                     @if (session()->has('user'))
                                         @if (session('user.role') == 2)
-                                            {{-- Member: tombol registrasi aktif --}}
-                                            <a href="{{ route('member.registration.show', $event['id']) }}"
-                                                class="btn btn-primary mt-2">
-                                                Registrasi
-                                            </a>
+                                            @if ($event['available_capacity'] > 0)
+                                                {{-- Member: tombol registrasi aktif jika masih ada kuota --}}
+                                                <a href="{{ route('member.registration.show', $event['id']) }}"
+                                                    class="btn btn-primary mt-2">
+                                                    Registrasi
+                                                </a>
+                                            @else
+                                                {{-- Member: tombol disabled jika penuh --}}
+                                                <button class="btn btn-secondary mt-2" disabled>
+                                                    Kuota Penuh
+                                                </button>
+                                            @endif
                                         @elseif (session('user.role') == 1 || session('user.role') == 3 || session('user.role') == 4)
                                             {{-- Panitia / Tim Keuangan: munculkan alert --}}
                                             <button class="btn btn-secondary mt-2"
@@ -68,7 +75,6 @@
                                             Registrasi
                                         </a>
                                     @endif
-
                                 </div>
                             </div>
                         </div>

@@ -5,8 +5,8 @@
 @endsection
 
 @section('content')
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('../memberast/images/bg_2.jpg');"
-        data-stellar-background-ratio="0.5">
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+        style="background-image: url('../memberast/images/member_registered_event.png');" data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
@@ -47,6 +47,16 @@
                                                 data-target="#modalPayment{{ $registration['registration_id'] }}">
                                                 Upload Bukti Pembayaran
                                             </button>
+                                            <form id="delete-form-{{ $registration['registration_id'] }}"
+                                                action="{{ route('member.registration.destroy', $registration['registration_id']) }}"
+                                                method="POST" class="mt-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn btn-danger"
+                                                    onclick="confirmCancel('{{ $registration['registration_id'] }}')">
+                                                    Batalkan Pendaftaran
+                                                </button>
+                                            </form>
                                         @break
 
                                         @case('diproses')

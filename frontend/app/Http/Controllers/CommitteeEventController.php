@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\ValidationException;
 
 class CommitteeEventController extends Controller
 {
@@ -14,10 +15,19 @@ class CommitteeEventController extends Controller
 
     public function index()
     {
-        $response = Http::get('http://localhost:3000/api/committee/committee-event-index');
+        $userId = session('user.id');
+
+        $response = Http::get('http://localhost:3000/api/committee/committee-event-index', [
+            'user_id' => $userId,
+        ]);
 
         if ($response->successful()) {
             $events = $response->json();
+
+            // Filter event berdasarkan user_id
+            $events = array_filter($events, function ($event) use ($userId) {
+                return $event['user_id'] == $userId; // Menyaring hanya event dengan user_id yang cocok
+            });
 
             $events = array_map(function ($event) {
                 $start = Carbon::parse($event['start_date'])->locale('id');
@@ -35,6 +45,21 @@ class CommitteeEventController extends Controller
                     } else {
                         $event['date_display'] = $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y'); // ex: 27 Mei 2025 - 02 Juni 2026
                     }
+                }
+
+                // Mapping status
+                switch ($event['event_status']) {
+                    case 1:
+                        $event['event_status_text'] = 'Mendatang';
+                        break;
+                    case 2:
+                        $event['event_status_text'] = 'Berlangsung';
+                        break;
+                    case 3:
+                        $event['event_status_text'] = 'Selesai';
+                        break;
+                    default:
+                        $event['event_status_text'] = 'Tidak diketahui';
                 }
 
                 return $event;
@@ -78,6 +103,27 @@ class CommitteeEventController extends Controller
             'sessions.*.name' => 'required|string|max:100',
             'sessions.*.speaker_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
+
+        // // Validasi range tanggal
+        // $startDate = Carbon::parse($request->start_date);
+        // $endDate = Carbon::parse($request->end_date);
+
+        // foreach ($request->sessions as $index => $session) {
+        //     $sessionStart = Carbon::createFromFormat('Y-m-d H:i', $session['session_start']);
+        //     $sessionEnd = Carbon::createFromFormat('Y-m-d H:i', $session['session_end']);
+
+        //     if ($sessionStart->lt($startDate) || $sessionStart->gt($endDate)) {
+        //         throw ValidationException::withMessages([
+        //             "sessions.$index.session_start" => "Session start harus berada dalam rentang tanggal event ({$startDate->format('Y-m-d')} - {$endDate->format('Y-m-d')})."
+        //         ]);
+        //     }
+
+        //     if ($sessionEnd->lt($startDate) || $sessionEnd->gt($endDate)) {
+        //         throw ValidationException::withMessages([
+        //             "sessions.$index.session_end" => "Session end harus berada dalam rentang tanggal event ({$startDate->format('Y-m-d')} - {$endDate->format('Y-m-d')})."
+        //         ]);
+        //     }
+        // }
 
         // Simpan file poster
         $posterPath = null;
