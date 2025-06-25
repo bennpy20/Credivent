@@ -99,6 +99,13 @@
                 dateFormat: "H:i",
                 time_24hr: true,
             });
+
+            flatpickr("#datetimePicker", {
+                dateFormat: "Y-m-d H:i",
+                // disable time picking
+                enableTime: true,
+                time_24hr: true,
+            });
         });
     </script>
 

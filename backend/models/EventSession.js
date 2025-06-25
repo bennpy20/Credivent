@@ -38,12 +38,6 @@ const EventSession = sequelize.define('event_session', {
         },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT'
-    },
-    formatted_id: {
-        type: DataTypes.VIRTUAL,
-        get() {
-            return `ESE-${this.id.toString().padStart(3, '0')}`;
-        }
     }
 }, {
     tableName: 'event_session',

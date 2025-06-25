@@ -20,8 +20,8 @@ class CommitteeCertificateController extends Controller
             $attendances = $response->json();
 
             $attendances = array_map(function ($item) {
-                $start = \Carbon\Carbon::parse($item['session']['session_start'])->locale('id');
-                $end = \Carbon\Carbon::parse($item['session']['session_end'])->locale('id');
+                $start = Carbon::parse($item['session']['session_start'])->locale('id');
+                $end = Carbon::parse($item['session']['session_end'])->locale('id');
 
                 // Format jam-nya (pukul)
                 $timeRange = $start->format('H:i') . ' - ' . $end->format('H:i');

@@ -9,7 +9,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="{{ route('committee.event.store', $event['id']) }}" method="POST"
+            <form action="{{ route('committee.event.update', $event['id']) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -72,22 +72,10 @@
                             </div>
                         </div>
                     </div> --}}
-                    {{-- <div class="form-group">
-                        <label>Jumlah sesi</label>
-                        <input type="number" class="form-control" name="session" placeholder="Masukkan jumlah sesi">
-                    </div> --}}
-
-                    <!-- Tambah di bawah input jumlah sesi -->
-                    <div class="form-group">
-                        <label>Sesi Event</label>
-                        <div id="edit-session-container"></div>
-                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addSessionEdit()">Tambah
-                            Sesi</button>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batalkan</button>
-                    <button type="submit" class="btn btn-primary">Buat event</button>
+                    <button type="submit" class="btn btn-primary">Edit event</button>
                 </div>
             </form>
         </div>
@@ -154,32 +142,35 @@
     let sessionIndexEdit = 0;
 
     function openEditModal(eventData) {
-    const container = document.getElementById('edit-session-container');
-    container.innerHTML = '';
-    sessionIndexEdit = 0;
+        const container = document.getElementById('edit-session-container');
+        container.innerHTML = '';
+        sessionIndexEdit = 0;
 
-    eventData.event_sessions.forEach((session, i) => {
-        const template = document.getElementById('session-template').innerHTML;
-        const html = template.replace(/__INDEX__/g, sessionIndexEdit);
-        container.insertAdjacentHTML('beforeend', html);
+        eventData.event_sessions.forEach((session, i) => {
+            const template = document.getElementById('session-template').innerHTML;
+            const html = template.replace(/__INDEX__/g, sessionIndexEdit);
+            container.insertAdjacentHTML('beforeend', html);
 
-        const block = container.querySelectorAll('.session-block')[i];
+            const block = container.querySelectorAll('.session-block')[i];
 
-        // Set session number label
-        block.querySelector('.session-number').innerText = sessionIndexEdit + 1;
+            // Set session number label
+            block.querySelector('.session-number').innerText = sessionIndexEdit + 1;
 
-        // Isi field dengan data dari session
-        block.querySelector(`[name="sessions[${sessionIndexEdit}][title]"]`).value = session.title;
-        block.querySelector(`[name="sessions[${sessionIndexEdit}][session_start]"]`).value = session.session_start;
-        block.querySelector(`[name="sessions[${sessionIndexEdit}][session_end]"]`).value = session.session_end;
-        block.querySelector(`[name="sessions[${sessionIndexEdit}][description]"]`).value = session.description;
-        block.querySelector(`[name="sessions[${sessionIndexEdit}][name]"]`).value = session.name;
+            // Isi field dengan data dari session
+            block.querySelector(`[name="sessions[${sessionIndexEdit}][title]"]`).value = session.title;
+            block.querySelector(`[name="sessions[${sessionIndexEdit}][session_start]"]`).value = session
+                .session_start;
+            block.querySelector(`[name="sessions[${sessionIndexEdit}][session_end]"]`).value = session
+                .session_end;
+            block.querySelector(`[name="sessions[${sessionIndexEdit}][description]"]`).value = session
+                .description;
+            block.querySelector(`[name="sessions[${sessionIndexEdit}][name]"]`).value = session.name;
 
-        sessionIndexEdit++;
-    });
+            sessionIndexEdit++;
+        });
 
-    $('#modalEditEvent').modal('show');
-}
+        $('#modalEditEvent').modal('show');
+    }
 
     function addSessionEdit() {
         const template = document.getElementById('session-template').innerHTML;

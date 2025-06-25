@@ -29,12 +29,6 @@ const Registration = sequelize.define('registration', {
     user_id: {
         type: DataTypes.STRING(15),
         allowNull: false
-    },
-    formatted_id: {
-        type: DataTypes.VIRTUAL,
-        get() {
-            return `REG-${this.id.toString().padStart(3, '0')}`;
-        }
     }
 }, {
     tableName: 'registration',

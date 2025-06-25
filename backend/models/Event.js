@@ -40,12 +40,6 @@ const Event = sequelize.define('event', {
     end_date: {
         type: DataTypes.DATEONLY,
         allowNull: false,
-    },
-    formatted_id: {
-        type: DataTypes.VIRTUAL,
-        get() {
-            return `EVN-${this.id.toString().padStart(3, '0')}`;
-        }
     }
 }, {
     tableName: 'event',

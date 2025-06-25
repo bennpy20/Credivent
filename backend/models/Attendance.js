@@ -26,12 +26,6 @@ const Attendance = sequelize.define('attendance', {
         },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT'
-    },
-    formatted_id: {
-        type: DataTypes.VIRTUAL,
-        get() {
-            return `ATD-${this.id.toString().padStart(3, '0')}`;
-        }
     }
 }, {
     tableName: 'attendance',

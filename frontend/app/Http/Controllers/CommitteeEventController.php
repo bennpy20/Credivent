@@ -88,42 +88,21 @@ class CommitteeEventController extends Controller
         $request->validate([
             'name' => 'required|string|max:150',
             'location' => 'required|string|max:200',
-            'poster_link' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            'poster_link' => 'required|image|max:2048',
             'max_participants' => 'required|numeric',
             'transaction_fee' => 'required|numeric',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d',
             // Validasi session
             'sessions' => 'required|array|min:1',
             // Validasi setiap field dalam sessions
             'sessions.*.title' => 'required|string|max:150',
             'sessions.*.session_start' => 'required|date_format:Y-m-d H:i',
-            'sessions.*.session_end' => 'required|date_format:Y-m-d H:i|after:sessions.*.session_start',
-            'sessions.*.description' => 'nullable|string|max:500',
+            'sessions.*.session_end' => 'required|date_format:Y-m-d H:i',
+            'sessions.*.description' => 'string|max:500',
             'sessions.*.name' => 'required|string|max:100',
-            'sessions.*.speaker_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'sessions.*.speaker_image' => 'nullable|image|max:2048',
         ]);
-
-        // // Validasi range tanggal
-        // $startDate = Carbon::parse($request->start_date);
-        // $endDate = Carbon::parse($request->end_date);
-
-        // foreach ($request->sessions as $index => $session) {
-        //     $sessionStart = Carbon::createFromFormat('Y-m-d H:i', $session['session_start']);
-        //     $sessionEnd = Carbon::createFromFormat('Y-m-d H:i', $session['session_end']);
-
-        //     if ($sessionStart->lt($startDate) || $sessionStart->gt($endDate)) {
-        //         throw ValidationException::withMessages([
-        //             "sessions.$index.session_start" => "Session start harus berada dalam rentang tanggal event ({$startDate->format('Y-m-d')} - {$endDate->format('Y-m-d')})."
-        //         ]);
-        //     }
-
-        //     if ($sessionEnd->lt($startDate) || $sessionEnd->gt($endDate)) {
-        //         throw ValidationException::withMessages([
-        //             "sessions.$index.session_end" => "Session end harus berada dalam rentang tanggal event ({$startDate->format('Y-m-d')} - {$endDate->format('Y-m-d')})."
-        //         ]);
-        //     }
-        // }
 
         // Simpan file poster
         $posterPath = null;
@@ -222,7 +201,35 @@ class CommitteeEventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:150',
+            'location' => 'required|string|max:200',
+            'max_participants' => 'required|numeric',
+            'transaction_fee' => 'required|numeric',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $user = session('user');
+        $user_id = $user['id'];
+
+        $event = [
+            'name' => $request->name,
+            'location' => $request->location,
+            'max_participants' => $request->max_participants,
+            'transaction_fee' => $request->transaction_fee,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'user_id' => $user_id
+        ];
+
+        $response = Http::put("http://localhost:3000/api/committee/committee-event-update/{$id}", $event);
+
+        if ($response->successful()) {
+            return redirect()->route('committee.event.index')->with('success', 'Event berhasil diupdate');
+        } else {
+            return back()->with(['error' => 'Gagal mengupdate event']);
+        }
     }
 
     /**
@@ -230,6 +237,17 @@ class CommitteeEventController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = session('user');
+        $userId = $user['id'];
+
+        $response = Http::delete("http://localhost:3000/api/committee/committee-event-destroy/{$id}", [
+            'user_id' => $userId
+        ]);
+
+        if ($response->successful()) {
+            return back()->with('success', 'Event berhasil dihapus');
+        } else {
+            return back()->with('error', 'Gagal menghapus event');
+        }
     }
 }

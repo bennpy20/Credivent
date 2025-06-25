@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\CommitteeCertificateController;
 use App\Http\Controllers\CommitteeEventController;
 use App\Http\Controllers\CommitteeScanQrController;
+use App\Http\Controllers\CommitteeSessionController;
 use App\Http\Controllers\EventFlowController;
 use App\Http\Controllers\FinanceTeamRegistrationController;
 use App\Http\Controllers\MemberAboutController;
@@ -19,7 +20,7 @@ use App\Http\Controllers\MemberScheduleController;
 use App\Http\Controllers\MemberSpeakerController;
 
 Route::get('/', function () {
-    return view('member.index');
+    return redirect()->route('member.index');
 });
 
 Route::get('/login', [LoginController::class, 'showForm'])->name('login');
@@ -50,6 +51,10 @@ Route::prefix('committee')->name('committee.')->middleware('role:3')->group(func
 
     Route::resource('event', CommitteeEventController::class, [
         'parameters' => ['event' => 'id']
+    ]);
+
+    Route::resource('session', CommitteeSessionController::class, [
+        'parameters' => ['session' => 'id']
     ]);
 
     Route::resource('scanqr', CommitteeScanQrController::class, [

@@ -433,9 +433,7 @@ router.get('/member-dashboard-index', async (req, res) => {
             };
         }));
 
-        const speakers = await Speaker.findAll({
-            order: [['name', 'ASC']]
-        });
+        const speakers = await Speaker.findAll();
 
         return res.status(200).json({
             events: eventResults,

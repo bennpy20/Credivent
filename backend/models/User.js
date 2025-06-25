@@ -31,12 +31,6 @@ const User = sequelize.define('user', {
     acc_status: {
         type: DataTypes.INTEGER,
         allowNull: false,
-    },
-    formatted_id: {
-        type: DataTypes.VIRTUAL,
-        get() {
-            return `UID-${this.id.toString().padStart(3, '0')}`;
-        }
     }
 }, {
     tableName: 'user',

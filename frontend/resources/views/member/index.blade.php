@@ -18,12 +18,12 @@
                     <p class="mb-4" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">25 Juni 2025 Pk
                         13.00-15.00.
                         Bandung, Indonesia</p>
-                    <div id="timer" class="d-flex mb-3">
+                    {{-- <div id="timer" class="d-flex mb-3">
                         <div class="time" id="days"></div>
                         <div class="time pl-4" id="hours"></div>
                         <div class="time pl-4" id="minutes"></div>
                         <div class="time pl-4" id="seconds"></div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

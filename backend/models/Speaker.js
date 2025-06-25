@@ -26,12 +26,6 @@ const Speaker = sequelize.define('speaker', {
         },
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT'
-    },
-    formatted_id: {
-        type: DataTypes.VIRTUAL,
-        get() {
-            return `SPK-${this.id.toString().padStart(3, '0')}`;
-        }
     }
 }, {
     tableName: 'speaker',

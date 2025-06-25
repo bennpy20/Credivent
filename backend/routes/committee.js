@@ -23,14 +23,39 @@ router.get('/committee-event-index', async (req, res) => {
         return res.status(400).json({ error: 'user_id is required' });
     }
 
-    await updateEventStatus();
-    
-    const events = await Event.findAll({
-        where: {
-            user_id: userId
-        }
-    });
-    res.json(events);
+    try {
+        await updateEventStatus();
+
+        const events = await Event.findAll({
+            where: { user_id: userId }
+        });
+
+        const withSessions = await Promise.all(events.map(async event => {
+            const sessions = await EventSession.findAll({
+                where: { event_id: event.id }
+            });
+
+            const sessionWithSpeakers = await Promise.all(sessions.map(async session => {
+                const speaker = await Speaker.findOne({ where: { event_session_id: session.id } });
+
+                return {
+                    ...session.toJSON(),
+                    name: speaker?.name ?? '',
+                    speaker_image: speaker?.speaker_image ?? ''
+                };
+            }));
+
+            return {
+                ...event.toJSON(),
+                event_sessions: sessionWithSpeakers
+            };
+        }));
+
+        res.json(withSessions);
+    } catch (error) {
+        console.error("Gagal ambil event + sessions:", error);
+        res.status(500).json({ error: "Gagal ambil data" });
+    }
 });
 
 router.post('/committee-event-store', async (req, res) => {
@@ -122,6 +147,250 @@ router.post('/committee-event-store', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: 'error', message: 'Server error' });
+    }
+});
+
+router.put('/committee-event-update/:id', async (req, res) => {
+    const {
+        name,
+        location,
+        max_participants,
+        transaction_fee,
+        start_date,
+        end_date
+    } = req.body;
+
+    try {
+        const event = await Event.findByPk(req.params.id);
+
+        if (!event) {
+            return res.status(404).json({ status: 'fail', message: 'Event tidak ditemukan' });
+        }
+
+        // Update field
+        event.name = name;
+        event.location = location;
+        event.max_participants = max_participants;
+        event.transaction_fee = transaction_fee;
+        event.start_date = start_date;
+        event.end_date = end_date;
+
+        await event.save();
+
+        res.json({ status: 'success', message: 'Event berhasil diupdate' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', message: 'Server error saat update event' });
+    }
+});
+
+router.delete('/committee-event-destroy/:id', async (req, res) => {
+    const user_id = req.body.user_id;
+
+    try {
+        const event = await Event.findByPk(req.params.id);
+
+        if (!event) {
+            return res.status(404).json({ status: 'fail', message: 'Event tidak ditemukan' });
+        }
+
+        // Cek kepemilikan
+        if (event.user_id !== user_id) {
+            return res.status(403).json({ status: 'fail', message: 'Anda tidak diizinkan menghapus event ini' });
+        }
+
+        // Cari semua session yang terkait
+        const sessions = await EventSession.findAll({ where: { event_id: event.id } });
+
+        for (const session of sessions) {
+            const speakers = await Speaker.findAll({ where: { event_session_id: session.id } });
+
+            // Hapus speaker
+            await Speaker.destroy({ where: { event_session_id: session.id } });
+        }
+
+        // Hapus semua event_session
+        await EventSession.destroy({ where: { event_id: event.id } });
+
+        // Terakhir, hapus event
+        await event.destroy();
+
+        res.json({ status: 'success', message: 'Event dan data terkait berhasil dihapus' });
+
+    } catch (error) {
+        console.error('Gagal menghapus event dan relasi:', error);
+        res.status(500).json({ status: 'error', message: 'Server error saat menghapus event' });
+    }
+});
+
+//// Tambah, update, delete untuk sesi
+router.get('/committee-session-index', async (req, res) => {
+    try {
+        const events = await Event.findAll({ order: [['createdAt', 'DESC']] });
+
+        const results = await Promise.all(events.map(async (event) => {
+            // Ambil semua sesi berdasarkan event_id
+            const sessions = await EventSession.findAll({
+                where: { event_id: event.id }
+            });
+
+            // Gabungkan sesi ke event
+            return {
+                ...event.toJSON(),
+                event_sessions: sessions.map(session => session.toJSON())
+            };
+        }));
+
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("Gagal ambil event + sessions:", error);
+        res.status(500).json({ error: "Gagal ambil data" });
+    }
+});
+
+router.post('/committee-session-store', async (req, res) => {
+    try {
+        const {
+            session,
+            event_id,
+            title,
+            session_start,
+            session_end,
+            description,
+            name,
+            speaker_image
+        } = req.body;
+
+        // Konversi waktu ke Date
+        const sessionStartUTC = new Date(session_start);
+        const sessionEndUTC = new Date(session_end);
+
+        const sessionStartWIB = new Date(sessionStartUTC.getTime() + 7 * 60 * 60 * 1000);
+        const sessionEndWIB = new Date(sessionEndUTC.getTime() + 7 * 60 * 60 * 1000);
+
+
+        const sessionId = await generateEventSessionId();
+        const speakerId = await generateSpeakerId();
+
+        const newSession = await EventSession.create({
+            id: sessionId,
+            session,
+            event_id,
+            title,
+            session_start: sessionStartWIB,
+            session_end: sessionEndWIB,
+            description
+        });
+
+        await Speaker.create({
+            id: speakerId,
+            event_session_id: sessionId,
+            name,
+            speaker_image: speaker_image || null
+        });
+
+        res.json({ status: 'success', message: 'Sesi berhasil ditambahkan' });
+    } catch (error) {
+        console.error('Tambah sesi error:', error);
+        res.status(500).json({ status: 'error', message: 'Server error' });
+    }
+});
+
+router.get('/committee-session-edit', async (req, res) => {
+    const eventId = req.query.event_id;
+
+    if (!eventId) {
+        return res.status(400).json({ error: 'event_id is required' });
+    }
+
+    try {
+        const event = await Event.findOne({ where: { id: eventId } });
+
+        if (!event) {
+            return res.status(404).json({ error: 'Event tidak ditemukan' });
+        }
+
+        const sessions = await EventSession.findAll({ where: { event_id: eventId } });
+
+        res.json({
+            ...event.toJSON(),
+            event_sessions: sessions.map(s => s.toJSON())
+        });
+    } catch (error) {
+        console.error('Gagal ambil event + sessions:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.put('/committee-session-update/:id', async (req, res) => {
+    try {
+        const sessionId = req.params.id;
+        const data = req.body;
+
+        // Validasi minimal
+        if (!data.title || !data.session_start || !data.session_end || !data.description) {
+            return res.status(400).json({ error: 'Data tidak lengkap' });
+        }
+
+        // Validasi dan konversi tanggal
+        const sessionStart = new Date(data.session_start);
+        const sessionEnd = new Date(data.session_end);
+
+        if (isNaN(sessionStart.getTime()) || isNaN(sessionEnd.getTime())) {
+            return res.status(400).json({ error: 'Format tanggal tidak valid' });
+        }
+
+        // Update event session
+        await EventSession.update({
+            title: data.title,
+            session_start: sessionStart,
+            session_end: sessionEnd,
+            description: data.description
+        }, {
+            where: { id: sessionId }
+        });
+
+        // Update speaker
+        const speaker = await Speaker.findOne({ where: { event_session_id: sessionId } });
+
+        if (speaker) {
+            await Speaker.update({
+                name: data.name,
+                speaker_image: data.speaker_image ?? speaker.speaker_image
+            }, {
+                where: { event_session_id: sessionId }
+            });
+        } else {
+            const speakerId = await generateSpeakerId();
+            await Speaker.create({
+                id: speakerId,
+                event_session_id: sessionId,
+                name: data.name,
+                speaker_image: data.speaker_image ?? null
+            });
+        }
+
+        res.json({ message: "Sesi berhasil diupdate" });
+    } catch (error) {
+        console.error('Error mengupdate sesi:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+router.delete('/committee-session-destroy/:id', async (req, res) => {
+    try {
+        const sessionId = req.params.id;
+
+        await Speaker.destroy({ where: { event_session_id: sessionId } });
+
+        await EventSession.destroy({ where: { id: sessionId } });
+
+        res.json({ message: 'Session deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting session:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

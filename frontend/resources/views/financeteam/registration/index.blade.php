@@ -43,7 +43,7 @@
                             <tbody>
                                 @php $no = 1; @endphp
                                 @foreach ($registrations as $registration)
-                                    @if ($registration['payment_status'] === 1)
+                                    @if ($registration['payment_status'] === 1 && $registration['payment_proof'] != "")
                                         <tr>
                                             <td>{{ $no++ }}</td>
                                             <td>{{ $registration['user']['name'] }}</td>
@@ -139,7 +139,7 @@
                             <tbody>
                                 @php $no = 1; @endphp
                                 @foreach ($registrations as $registration)
-                                    @if ($registration['payment_status'] != 1)
+                                    @if ($registration['payment_status'] != 1 && $registration['payment_proof'] != "")
                                         <tr>
                                             <td>{{ $no++ }}</td>
                                             <td>{{ $registration['user']['name'] }}</td>

@@ -12,53 +12,60 @@ class MemberDashboardController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $response = Http::get('http://localhost:3000/api/member/member-dashboard-index');
+{
+    // Default supaya tidak undefined meskipun API gagal
+    $speakers = [];
+    $events = [];
 
-        if ($response->successful()) {
-            $data = $response->json();
+    $response = Http::get('http://localhost:3000/api/member/member-dashboard-index');
 
-            $events = array_map(function ($event) {
-                $start = Carbon::parse($event['start_date'])->locale('id');
-                $end = Carbon::parse($event['end_date'])->locale('id');
+    if ($response->successful()) {
+        $data = $response->json();
 
-                if ($start->isSameDay($end)) {
-                    $event['date_display'] = $start->translatedFormat('d F Y');
-                } elseif ($start->format('Y') === $end->format('Y')) {
-                    if ($start->format('F') === $end->format('F')) {
-                        $event['date_display'] = $start->format('d') . '-' . $end->translatedFormat('d F Y');
-                    } else {
-                        $event['date_display'] = $start->translatedFormat('d F') . ' - ' . $end->translatedFormat('d F Y');
-                    }
+        // Pakai fallback jika key tidak ada
+        $speakers = $data['speakers'] ?? [];
+
+        $events = array_map(function ($event) {
+            $start = Carbon::parse($event['start_date'])->locale('id');
+            $end = Carbon::parse($event['end_date'])->locale('id');
+
+            if ($start->isSameDay($end)) {
+                $event['date_display'] = $start->translatedFormat('d F Y');
+            } elseif ($start->format('Y') === $end->format('Y')) {
+                if ($start->format('F') === $end->format('F')) {
+                    $event['date_display'] = $start->format('d') . '-' . $end->translatedFormat('d F Y');
                 } else {
-                    $event['date_display'] = $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y');
+                    $event['date_display'] = $start->translatedFormat('d F') . ' - ' . $end->translatedFormat('d F Y');
                 }
+            } else {
+                $event['date_display'] = $start->translatedFormat('d F Y') . ' - ' . $end->translatedFormat('d F Y');
+            }
 
-                // Mapping status event
-                switch ($event['event_status']) {
-                    case 1:
-                        $event['event_status_text'] = 'Mendatang';
-                        break;
-                    case 2:
-                        $event['event_status_text'] = 'Berlangsung';
-                        break;
-                    case 3:
-                        $event['event_status_text'] = 'Selesai';
-                        break;
-                    default:
-                        $event['event_status_text'] = 'Tidak diketahui';
-                }
+            switch ($event['event_status']) {
+                case 1:
+                    $event['event_status_text'] = 'Mendatang';
+                    break;
+                case 2:
+                    $event['event_status_text'] = 'Berlangsung';
+                    break;
+                case 3:
+                    $event['event_status_text'] = 'Selesai';
+                    break;
+                default:
+                    $event['event_status_text'] = 'Tidak diketahui';
+            }
 
-                return $event;
-            }, $data['events']);
-
-            $speakers = $data['speakers'];
-
-            return view('member.index', compact('events', 'speakers'));
-        }
-
-        return back()->withErrors(['error' => 'Gagal mengambil data dashboard']);
+            return $event;
+        }, $data['events'] ?? []);
+    } else {
+        // Optional: kasih notifikasi error ke user
+        session()->flash('error', 'Gagal mengambil data dashboard');
     }
+
+    // Tetap return view dengan $events dan $speakers meskipun kosong
+    return view('member.index', compact('events', 'speakers'));
+}
+
 
     /**
      * Show the form for creating a new resource.
